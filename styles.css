@@ -1,0 +1,255 @@
+:root {
+  --brand-color: #fd3e81;
+  --light-brand: #ffd0e0;
+  --dark-brand: #d01e61;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  background-color: var(--brand-color);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 1.8rem;
+}
+
+.next-week {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.next-week h2 {
+  color: var(--brand-color);
+  margin-bottom: 10px;
+}
+
+.next-week-days {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.team-select {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.team-select label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.team-select select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.calendar-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.calendar-nav button {
+  background-color: var(--brand-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.calendar-nav button:hover {
+  background-color: var(--dark-brand);
+}
+
+.calendar-month {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--brand-color);
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar th {
+  background-color: var(--light-brand);
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+  color: var(--dark-brand);
+}
+
+.calendar td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  height: 60px;
+  width: 14.28%;
+  vertical-align: top;
+  position: relative;
+}
+
+.calendar .date {
+  font-size: 0.9rem;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.calendar .office-day {
+  background-color: var(--light-brand);
+  border-left: 4px solid var(--brand-color);
+}
+
+.calendar .past-day {
+  background-color: #f9f9f9;
+  color: #999;
+}
+
+.calendar .other-month {
+  background-color: #f5f5f5;
+  color: #aaa;
+}
+
+.calendar .bank-holiday {
+  background-color: #e8f4ff;
+  color: #0066cc;
+}
+
+.calendar .festive-break {
+  background-color: #ffeded;
+  color: #cc0000;
+}
+
+.office-indicator, .holiday-indicator {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--brand-color);
+}
+
+.holiday-indicator {
+  color: #0066cc;
+}
+
+.festive-indicator {
+  font-size: 0.8rem;
+  color: #cc0000;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+}
+
+.office-color {
+  background-color: var(--light-brand);
+  border-left: 4px solid var(--brand-color);
+}
+
+.bank-holiday-color {
+  background-color: #e8f4ff;
+}
+
+.festive-break-color {
+  background-color: #ffeded;
+}
+
+@media (max-width: 768px) {
+  .calendar td {
+    padding: 5px;
+    height: 50px;
+  }
+  
+  .calendar .date {
+    font-size: 0.8rem;
+  }
+  
+  .office-indicator, .holiday-indicator, .festive-indicator {
+    font-size: 0.7rem;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .calendar td {
+    padding: 3px;
+    height: 40px;
+  }
+  
+  .calendar th {
+    padding: 5px;
+    font-size: 0.8rem;
+  }
+  
+  .calendar .date {
+    font-size: 0.7rem;
+  }
+  
+  .office-indicator, .holiday-indicator, .festive-indicator {
+    font-size: 0.6rem;
+  }
+}
