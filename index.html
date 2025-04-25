@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EssenceMediacom Office Days</title>
+  <style>
+    /* Inlining critical CSS to prevent flash of unstyled content */
+    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>EssenceMediacom Office Days</h1>
+    </header>
+    
+    <div class="next-week">
+      <h2>Coming up next week:</h2>
+      <div class="next-week-days" id="next-week-days">Loading...</div>
+    </div>
+    
+    <div class="team-select">
+      <label for="team">Select Team:</label>
+      <select id="team">
+        <option value="TPO" selected>TPO</option>
+        <!-- More teams can be added here in the future -->
+      </select>
+    </div>
+    
+    <div class="calendar-container">
+      <div class="calendar-nav">
+        <button id="prev-month">&lt; Previous</button>
+        <div class="calendar-month" id="current-month">April 2025</div>
+        <button id="next-month">Next &gt;</button>
+      </div>
+      
+      <table class="calendar" id="calendar">
+        <thead>
+          <tr>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-body">
+          <!-- Calendar will be generated here -->
+        </tbody>
+      </table>
+      
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color office-color"></div>
+          <span>Office Day</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color bank-holiday-color"></div>
+          <span>Bank Holiday</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color festive-break-color"></div>
+          <span>Festive Break (Dec 25-31, TBC)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Bank holidays for UK 2025 (sample data, would need updating yearly)
+    const bankHolidays2025 = [
+      new Date(2025, 0, 1),  // New Year's Day
+      new Date(2025, 3, 18), // Good Friday
+      new Date(2025, 3, 21), // Easter Monday
+      new Date(2025, 4, 5),  // Early May Bank Holiday
+      new Date(2025, 4, 26), // Spring Bank Holiday
+      new Date(2025, 7, 25), // Summer Bank Holiday
+      new Date(2025, 11, 25), // Christmas Day
+      new Date(2025, 11, 26)  // Boxing Day
+    ];
+    
+    // Current date (used for highlighting today and determining past days)
+    const today = new Date();
+    
+    // Default view (current month)
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+    
+    // TPO Team rotation patterns and history
+    // Important dates to establish pattern:
+    // Mar 31, 2025: Mon, Wed, Thu pattern
+    // Apr 7, 2025: Tue, Wed, Fri pattern
+    // Apr 14, 2025: Tue, Wed, Fri pattern
+    // Apr 21, 2025: Mon, Wed, Thu pattern
+    // Apr 28, 2025: Mon, Wed, Thu pattern
+    // May 5, 2025: Tue, Wed, Fri pattern
+    
+    function getPatternStartDates() {
+      // These dates mark the starts of different rotation patterns
+      return [
+        new Date(2025, 2, 31), // Mar 31, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 3, 7),  // Apr 7, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 3, 14), // Apr 14, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 3, 21), // Apr 21, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 3, 28), // Apr 28, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 4, 5),  // May 5, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 4, 12)  // May 12, 2025: Tue, Wed, Fri pattern
+      ];
+    }
+    
+    function isPatternA(date) {
+      // Pattern A: Monday, Wednesday, Thursday
+      const startDates = getPatternStartDates();
+      
+      // Create a date for 4 week cycle (pattern repeats every 4 weeks)
+      const cycleEnd = new Date(startDates[6]);
+      cycleEnd.setDate(cycleEnd.getDate() + 14); // Two weeks after May 12
+      
+      // For dates before our known history, use the 4-week cycle logic
+      if (date < startDates[0]) {
+        // Calculate 4-week cycles backwards
+        const daysBefore = Math.ceil((startDates[0] - date) / (24 * 60 * 60 * 1000));
+        const weeksBefore = Math.ceil(daysBefore / 7);
+        const cyclePosition = weeksBefore % 4;
+        
+        // If it's in the first or second position of a backwards cycle from Mar 31
+        return cyclePosition === 1 || cyclePosition === 0;
+      }
+      
+      // For known history dates, use explicit pattern assignments
+      for (let i = 0; i < startDates.length; i++) {
+        // Create end date for this period (start of next period or +2 weeks for the last one)
+        const endDate = i < startDates.length - 1 ? 
+                        startDates[i + 1] : 
+                        new Date(startDates[i].getTime() + (14 * 24 * 60 * 60 * 1000));
+                        
+        if (date >= startDates[i] && date < endDate) {
+          // Mon, Wed, Thu pattern periods
+          if (i === 0 || i === 3 || i === 4) {
+            return true;
+          }
+          // Tue, Wed, Fri pattern periods
+          return false;
+        }
+      }
+      
+      // For dates after our explicit history, use 4-week cycle
+      if (date >= cycleEnd) {
+        // Calculate weeks since cycle end
+        const daysAfter = Math.floor((date - cycleEnd) / (24 * 60 * 60 * 1000));
+        const weeksAfter = Math.floor(daysAfter / 7);
+        const cyclePosition = weeksAfter % 4;
+        
+        // Pattern A is weeks 1 and 2 of the cycle (positions 0 and 1)
+        return cyclePosition === 0 || cyclePosition === 1;
+      }
+      
+      // Fallback (shouldn't reach here)
+      return false;
+    }
+    
+    function isOfficeDayForTPO(date) {
+      // Check if it's a weekend
+      if (date.getDay() === 0 || date.getDay() === 6) {
+        return false;
+      }
+      
+      // Check if it's a bank holiday
+      if (isBankHoliday(date)) {
+        return false;
+      }
+      
+      // Check if it's festive break (Dec 25-31)
+      if (isFestiveBreak(date)) {
+        return false;
+      }
+      
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      
+      // Pattern A: Monday (1), Wednesday (3), Thursday (4)
+      if (isPatternA(date)) {
+        return dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 4;
+      }
+      // Pattern B: Tuesday (2), Wednesday (3), Friday (5)
+      else {
+        return dayOfWeek === 2 || dayOfWeek === 3 || dayOfWeek === 5;
+      }
+    }
+    
+    function isBankHoliday(date) {
+      return bankHolidays2025.some(holiday => 
+        holiday.getDate() === date.getDate() && 
+        holiday.getMonth() === date.getMonth() && 
+        holiday.getFullYear() === date.getFullYear()
+      );
+    }
+    
+    function isFestiveBreak(date) {
+      // December 25-31 (TBC)
+      return (date.getMonth() === 11 && date.getDate() >= 25 && date.getDate() <= 31);
+    }
+    
+    function generateCalendar() {
+      const calendarBody = document.getElementById('calendar-body');
+      const monthDisplay = document.getElementById('current-month');
+      
+      // Clear existing calendar
+      calendarBody.innerHTML = '';
+      
+      // Set the month name
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                          'July', 'August', 'September', 'October', 'November', 'December'];
+      monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      // Get first day of the month
+      const firstDay = new Date(currentYear, currentMonth, 1);
+      
+      // Get last day of the month
+      const lastDay = new Date(currentYear, currentMonth + 1, 0);
+      
+      // Get the day of the week the first day falls on (0-6)
+      // Convert Sunday (0) to be the last day of the week (6) for our Monday-start calendar
+      let firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
+      
+      // Get the total number of days in the month
+      const totalDays = lastDay.getDate();
+      
+      // Calculate number of rows needed (including days from prev/next months)
+      const totalCells = Math.ceil((totalDays + firstDayIndex) / 7) * 7;
+      
+      // Get the last day of the previous month
+      const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+      
+      let date = 1;
+      let nextMonthDate = 1;
+      
+      // Create calendar rows
+      for (let i = 0; i < totalCells / 7; i++) {
+        const row = document.createElement('tr');
+        
+        // Create cells for each row
+        for (let j = 0; j < 7; j++) {
+          const cell = document.createElement('td');
+          
+          // Fill in days from previous month
+          if (i === 0 && j < firstDayIndex) {
+            const prevDate = prevMonthLastDay - firstDayIndex + j + 1;
+            const prevMonthDate = new Date(currentYear, currentMonth - 1, prevDate);
+            
+            cell.innerHTML = `<div class="date">${prevDate}</div>`;
+            cell.classList.add('other-month');
+            
+            if (isOfficeDayForTPO(prevMonthDate)) {
+              cell.classList.add('office-day');
+              cell.innerHTML += `<div class="office-indicator">Office</div>`;
+            }
+            
+            if (isBankHoliday(prevMonthDate)) {
+              cell.classList.add('bank-holiday');
+              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+            }
+            
+            if (isFestiveBreak(prevMonthDate)) {
+              cell.classList.add('festive-break');
+              cell.innerHTML += `<div class="festive-indicator">Festive Break</div>`;
+            }
+          }
+          // Fill in days from current month
+          else if (date <= totalDays) {
+            const currentDate = new Date(currentYear, currentMonth, date);
+            
+            cell.innerHTML = `<div class="date">${date}</div>`;
+            
+            // Check if it's today
+            if (currentDate.getDate() === today.getDate() && 
+                currentDate.getMonth() === today.getMonth() && 
+                currentDate.getFullYear() === today.getFullYear()) {
+              cell.style.border = '2px solid var(--brand-color)';
+              cell.style.fontWeight = 'bold';
+            }
+            
+            // Check if it's a past day
+            if (currentDate < today) {
+              cell.classList.add('past-day');
+            }
+            
+            // Check if it's an office day
+            if (isOfficeDayForTPO(currentDate)) {
+              cell.classList.add('office-day');
+              cell.innerHTML += `<div class="office-indicator">Office</div>`;
+            }
+            
+            // Check if it's a bank holiday
+            if (isBankHoliday(currentDate)) {
+              cell.classList.add('bank-holiday');
+              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+            }
+            
+            // Check if it's festive break
+            if (isFestiveBreak(currentDate)) {
+              cell.classList.add('festive-break');
+              cell.innerHTML += `<div class="festive-indicator">Festive Break</div>`;
+            }
+            
+            date++;
+          }
+          // Fill in days from next month
+          else {
+            const nextMonthCurrentDate = new Date(currentYear, currentMonth + 1, nextMonthDate);
+            
+            cell.innerHTML = `<div class="date">${nextMonthDate}</div>`;
+            cell.classList.add('other-month');
+            
+            if (isOfficeDayForTPO(nextMonthCurrentDate)) {
+              cell.classList.add('office-day');
+              cell.innerHTML += `<div class="office-indicator">Office</div>`;
+            }
+            
+            if (isBankHoliday(nextMonthCurrentDate)) {
+              cell.classList.add('bank-holiday');
+              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+            }
+            
+            if (isFestiveBreak(nextMonthCurrentDate)) {
+              cell.classList.add('festive-break');
+              cell.innerHTML += `<div class="festive-indicator">Festive Break</div>`;
+            }
+            
+            nextMonthDate++;
+          }
+          
+          row.appendChild(cell);
+        }
+        
+        calendarBody.appendChild(row);
+      }
+    }
+    
+    function updateNextWeekInfo() {
+      const nextWeekDaysEl = document.getElementById('next-week-days');
+      const nextMonday = new Date();
+      
+      // Find the next Monday
+      while (nextMonday.getDay() !== 1) {
+        nextMonday.setDate(nextMonday.getDate() + 1);
+      }
+      
+      // Check which days are office days for the next week
+      const officeDays = [];
+      for (let i = 0; i < 5; i++) { // Check Monday to Friday
+        const checkDate = new Date(nextMonday);
+        checkDate.setDate(nextMonday.getDate() + i);
+        
+        if (isOfficeDayForTPO(checkDate)) {
+          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          officeDays.push(dayNames[checkDate.getDay()]);
+        }
+      }
+      
+      if (officeDays.length > 0) {
+        nextWeekDaysEl.textContent = officeDays.join(', ');
+      } else {
+        nextWeekDaysEl.textContent = 'No office days next week';
+      }
+    }
+    
+    // Navigation functions
+    document.getElementById('prev-month').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      generateCalendar();
+    });
+    
+    document.getElementById('next-month').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      generateCalendar();
+    });
+    
+    // Team selection change handler
+    document.getElementById('team').addEventListener('change', () => {
+      // Currently only TPO is implemented
+      // This would be expanded when more teams are added
+      generateCalendar();
+      updateNextWeekInfo();
+    });
+    
+    // Handle CSS loading issues by adding inline styles if external CSS fails
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        // Check if external styles loaded correctly
+        const styles = getComputedStyle(document.body);
+        if (!styles.getPropertyValue('--brand-color').trim()) {
+          // If CSS variables not loaded, apply inline styles
+          document.head.insertAdjacentHTML('beforeend', `
+            <style>
+              :root {
+                --brand-color: #fd3e81;
+                --light-brand: #ffd0e0;
+                --dark-brand: #d01e61;
+              }
+              /* Add critical styles here */
+              header { background-color: #fd3e81; color: white; }
+              .calendar-nav button { background-color: #fd3e81; }
+              .office-day { background-color: #ffd0e0; border-left: 4px solid #fd3e81; }
+            </style>
+          `);
+        }
+      }, 500);
+    });
+    
+    // Initialize the calendar and next week info
+    window.onload = function() {
+      generateCalendar();
+      updateNextWeekInfo();
+    };
+  </script>
+</body>
+</html>
