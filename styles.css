@@ -166,7 +166,7 @@ h1 {
   color: #cc0000;
 }
 
-.office-indicator, .holiday-indicator {
+.office-indicator, festive-indicator, .holiday-indicator {
   margin-top: 10px;
   font-size: 0.8rem;
   font-weight: bold;
@@ -178,7 +178,6 @@ h1 {
 }
 
 .festive-indicator {
-  font-size: 0.8rem;
   color: #cc0000;
 }
 
