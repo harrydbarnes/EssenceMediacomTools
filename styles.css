@@ -40,7 +40,7 @@ h1 {
   background-color: white;
   border-radius: 10px;
   padding: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -58,7 +58,7 @@ h1 {
   background-color: white;
   border-radius: 10px;
   padding: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -82,6 +82,7 @@ h1 {
   padding: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
+  margin-bottom: 15px;
 }
 
 .calendar-nav {
@@ -166,7 +167,7 @@ h1 {
   color: #cc0000;
 }
 
-.office-indicator, festive-indicator, .holiday-indicator {
+.office-indicator, .festive-indicator, .holiday-indicator {
   margin-top: 10px;
   font-size: 0.8rem;
   font-weight: bold;
@@ -214,6 +215,73 @@ h1 {
   background-color: #ffeded;
 }
 
+.settings-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-title {
+  color: var(--brand-color);
+  margin-bottom: 15px;
+}
+
+.settings-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.settings-option label {
+  margin-left: 10px;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--brand-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
 @media (max-width: 768px) {
   .calendar td {
     padding: 5px;
@@ -250,5 +318,12 @@ h1 {
   
   .office-indicator, .holiday-indicator, .festive-indicator {
     font-size: 0.6rem;
+  }
+  
+  h1 {
+    font-size: 1.2rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 }
