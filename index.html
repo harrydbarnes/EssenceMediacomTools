@@ -103,6 +103,12 @@
     // Apr 21, 2025: Mon, Wed, Thu pattern
     // Apr 28, 2025: Mon, Wed, Thu pattern
     // May 5, 2025: Tue, Wed, Fri pattern
+    // May 12, 2025: Tue, Wed, Fri pattern
+    // May 19, 2025: Mon, Wed, Thu pattern
+    // May 26, 2025: Mon, Wed, Thu pattern
+    // Jun 2, 2025: Tue, Wed, Fri pattern
+    // Jun 9, 2025: Tue, Wed, Fri pattern
+    // Then repeat the 4-week cycle
     
     function getPatternStartDates() {
       // These dates mark the starts of different rotation patterns
@@ -113,7 +119,9 @@
         new Date(2025, 3, 21), // Apr 21, 2025: Mon, Wed, Thu pattern
         new Date(2025, 3, 28), // Apr 28, 2025: Mon, Wed, Thu pattern
         new Date(2025, 4, 5),  // May 5, 2025: Tue, Wed, Fri pattern
-        new Date(2025, 4, 12)  // May 12, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 4, 12), // May 12, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 4, 19), // May 19, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 4, 26)  // May 26, 2025: Mon, Wed, Thu pattern
       ];
     }
     
@@ -121,9 +129,8 @@
       // Pattern A: Monday, Wednesday, Thursday
       const startDates = getPatternStartDates();
       
-      // Create a date for 4 week cycle (pattern repeats every 4 weeks)
-      const cycleEnd = new Date(startDates[6]);
-      cycleEnd.setDate(cycleEnd.getDate() + 14); // Two weeks after May 12
+      // Create a reference date for the 4-week cycle (June 2, 2025)
+      const cycleReferenceDate = new Date(2025, 5, 2); // June 2, 2025
       
       // For dates before our known history, use the 4-week cycle logic
       if (date < startDates[0]) {
@@ -138,30 +145,31 @@
       
       // For known history dates, use explicit pattern assignments
       for (let i = 0; i < startDates.length; i++) {
-        // Create end date for this period (start of next period or +2 weeks for the last one)
+        // Create end date for this period (start of next period or +1 week for the last one)
         const endDate = i < startDates.length - 1 ? 
                         startDates[i + 1] : 
-                        new Date(startDates[i].getTime() + (14 * 24 * 60 * 60 * 1000));
+                        new Date(startDates[i].getTime() + (7 * 24 * 60 * 60 * 1000));
                         
         if (date >= startDates[i] && date < endDate) {
-          // Mon, Wed, Thu pattern periods
-          if (i === 0 || i === 3 || i === 4) {
+          // Pattern A: Mon, Wed, Thu pattern periods
+          if (i === 0 || i === 3 || i === 4 || i === 7 || i === 8) {
             return true;
           }
-          // Tue, Wed, Fri pattern periods
+          // Pattern B: Tue, Wed, Fri pattern periods
           return false;
         }
       }
       
       // For dates after our explicit history, use 4-week cycle
-      if (date >= cycleEnd) {
-        // Calculate weeks since cycle end
-        const daysAfter = Math.floor((date - cycleEnd) / (24 * 60 * 60 * 1000));
+      if (date >= new Date(2025, 5, 2)) { // June 2, 2025 and beyond
+        // Calculate weeks since reference date
+        const daysAfter = Math.floor((date - cycleReferenceDate) / (24 * 60 * 60 * 1000));
         const weeksAfter = Math.floor(daysAfter / 7);
         const cyclePosition = weeksAfter % 4;
         
-        // Pattern A is weeks 1 and 2 of the cycle (positions 0 and 1)
-        return cyclePosition === 0 || cyclePosition === 1;
+        // Pattern A (Mon, Wed, Thu) is weeks 3 and 4 of the cycle
+        // Pattern B (Tue, Wed, Fri) is weeks 1 and 2 of the cycle
+        return cyclePosition === 2 || cyclePosition === 3;
       }
       
       // Fallback (shouldn't reach here)
