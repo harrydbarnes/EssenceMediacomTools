@@ -12,6 +12,42 @@
     /* Inlining critical CSS to prevent flash of unstyled content */
     body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+    
+    /* Responsive title */
+    h1 {
+      font-size: clamp(1.2rem, 5vw, 2rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 480px) {
+      .container { padding: 10px; }
+      
+      /* Calendar cell improvements for mobile */
+      .calendar td {
+        position: relative;
+        min-height: 50px;
+        padding-bottom: 25px;
+      }
+      
+      .date {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        font-size: 0.9rem;
+      }
+      
+      .office-indicator, .holiday-indicator, .festive-indicator {
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        font-size: 0.7rem;
+        text-align: center;
+      }
+    }
   </style>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -274,12 +310,12 @@
             
             if (isBankHoliday(prevMonthDate)) {
               cell.classList.add('bank-holiday');
-              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
             }
             
             if (isFestiveBreak(prevMonthDate)) {
               cell.classList.add('festive-break');
-              cell.innerHTML += `<div class="festive-indicator">Festive Break</div>`;
+              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
             }
           }
           // Fill in days from current month
@@ -310,13 +346,13 @@
             // Check if it's a bank holiday
             if (isBankHoliday(currentDate)) {
               cell.classList.add('bank-holiday');
-              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
             }
             
             // Check if it's festive break
             if (isFestiveBreak(currentDate)) {
               cell.classList.add('festive-break');
-              cell.innerHTML += `<div class="festive-indicator">Festive Break</div>`;
+              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
             }
             
             date++;
@@ -335,12 +371,12 @@
             
             if (isBankHoliday(nextMonthCurrentDate)) {
               cell.classList.add('bank-holiday');
-              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
             }
             
             if (isFestiveBreak(nextMonthCurrentDate)) {
               cell.classList.add('festive-break');
-              cell.innerHTML += `<div class="festive-indicator">Festive Break</div>`;
+              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
             }
             
             nextMonthDate++;
@@ -369,7 +405,8 @@
         checkDate.setDate(nextMonday.getDate() + i);
         
         if (isOfficeDayForTPO(checkDate)) {
-          const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          // Use shortened day names for mobile compatibility
+          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
           officeDays.push(dayNames[checkDate.getDay()]);
         }
       }
@@ -423,9 +460,33 @@
                 --dark-brand: #d01e61;
               }
               /* Add critical styles here */
-              header { background-color: #fd3e81; color: white; }
-              .calendar-nav button { background-color: #fd3e81; }
+              header { background-color: #fd3e81; color: white; padding: 10px; }
+              .calendar-nav button { background-color: #fd3e81; color: white; border: none; padding: 5px 10px; cursor: pointer; }
               .office-day { background-color: #ffd0e0; border-left: 4px solid #fd3e81; }
+              .bank-holiday { background-color: #e6f7ff; border-left: 4px solid #1890ff; }
+              .festive-break { background-color: #fff7e6; border-left: 4px solid #fa8c16; }
+              
+              .calendar td {
+                position: relative;
+                height: 60px;
+                width: 14.28%;
+                vertical-align: top;
+                border: 1px solid #ddd;
+                padding: 5px;
+              }
+              
+              /* Additional mobile styles */
+              @media (max-width: 480px) {
+                .calendar th {
+                  font-size: 0.8rem;
+                  padding: 2px;
+                }
+                
+                .calendar td {
+                  height: 50px;
+                  padding: 2px;
+                }
+              }
             </style>
           `);
         }
