@@ -118,11 +118,11 @@ h1 {
 }
 
 .calendar th {
-  background-color: var(--light-brand);
+  background-color: #ffffff;
   padding: 10px;
   text-align: center;
   border: 1px solid #ddd;
-  color: var(--dark-brand);
+  color: #181818;
 }
 
 .calendar td {
