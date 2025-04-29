@@ -48,6 +48,84 @@
         text-align: center;
       }
     }
+
+    /* Toggle switch styles */
+    .calendar-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .toggle-label {
+      margin-right: 10px;
+      font-size: 0.9rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--brand-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+    @media (max-width: 768px) {
+      .calendar-options {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .toggle-container {
+        margin-left: 0;
+        margin-top: 10px;
+        align-self: flex-end;
+      }
+    }
   </style>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -78,7 +156,7 @@
       </div>
       
       <table class="calendar" id="calendar">
-        <thead>
+        <thead id="calendar-header">
           <tr>
             <th>Mon</th>
             <th>Tue</th>
@@ -94,18 +172,28 @@
         </tbody>
       </table>
       
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-color office-color"></div>
-          <span>Office Day</span>
+      <div class="calendar-options">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color office-color"></div>
+            <span>Office Day</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color bank-holiday-color"></div>
+            <span>Bank Holiday</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color festive-break-color"></div>
+            <span>Festive Break (Dec 25-31 - TBC)</span>
+          </div>
         </div>
-        <div class="legend-item">
-          <div class="legend-color bank-holiday-color"></div>
-          <span>Bank Holiday</span>
-        </div>
-        <div class="legend-item">
-          <div class="legend-color festive-break-color"></div>
-          <span>Festive Break (Dec 25-31 - TBC)</span>
+        
+        <div class="toggle-container">
+          <span class="toggle-label">Show Weekends</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="weekend-toggle" checked>
+            <span class="slider"></span>
+          </label>
         </div>
       </div>
     </div>
@@ -130,6 +218,10 @@
     // Default view (current month)
     let currentMonth = today.getMonth();
     let currentYear = today.getFullYear();
+    
+    // Weekend display preference (default: show weekends)
+    let showWeekends = localStorage.getItem('showWeekends') ? 
+      localStorage.getItem('showWeekends') === 'true' : true;
     
     // TPO Team rotation patterns and history
     // Important dates to establish pattern:
@@ -252,10 +344,43 @@
       // December 25-31 (TBC)
       return (date.getMonth() === 11 && date.getDate() >= 25 && date.getDate() <= 31);
     }
+
+    function updateCalendarHeader() {
+      const headerRow = document.querySelector('#calendar-header tr');
+      
+      if (showWeekends) {
+        // Ensure all 7 days are shown
+        if (headerRow.children.length < 7) {
+          headerRow.innerHTML = `
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+          `;
+        }
+      } else {
+        // Remove weekend columns
+        if (headerRow.children.length > 5) {
+          headerRow.innerHTML = `
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+          `;
+        }
+      }
+    }
     
     function generateCalendar() {
       const calendarBody = document.getElementById('calendar-body');
       const monthDisplay = document.getElementById('current-month');
+      
+      // Update calendar header based on weekend toggle
+      updateCalendarHeader();
       
       // Clear existing calendar
       calendarBody.innerHTML = '';
@@ -279,7 +404,8 @@
       const totalDays = lastDay.getDate();
       
       // Calculate number of rows needed (including days from prev/next months)
-      const totalCells = Math.ceil((totalDays + firstDayIndex) / 7) * 7;
+      const daysPerWeek = showWeekends ? 7 : 5;
+      const totalCells = Math.ceil((totalDays + firstDayIndex) / daysPerWeek) * daysPerWeek;
       
       // Get the last day of the previous month
       const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
@@ -288,11 +414,16 @@
       let nextMonthDate = 1;
       
       // Create calendar rows
-      for (let i = 0; i < totalCells / 7; i++) {
+      for (let i = 0; i < totalCells / daysPerWeek; i++) {
         const row = document.createElement('tr');
         
         // Create cells for each row
-        for (let j = 0; j < 7; j++) {
+        for (let j = 0; j < daysPerWeek; j++) {
+          // Skip weekend cells if weekends are hidden
+          if (!showWeekends && j >= 5) {
+            continue;
+          }
+          
           const cell = document.createElement('td');
           
           // Fill in days from previous month
@@ -444,6 +575,17 @@
       generateCalendar();
       updateNextWeekInfo();
     });
+
+    // Weekend toggle handler
+    document.getElementById('weekend-toggle').addEventListener('change', function() {
+      showWeekends = this.checked;
+      
+      // Save preference to local storage
+      localStorage.setItem('showWeekends', showWeekends);
+      
+      // Regenerate calendar with new settings
+      generateCalendar();
+    });
     
     // Handle CSS loading issues by adding inline styles if external CSS fails
     window.addEventListener('DOMContentLoaded', function() {
@@ -474,6 +616,52 @@
                 border: 1px solid #ddd;
                 padding: 5px;
               }
+
+              /* Toggle switch styles */
+              .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 24px;
+              }
+
+              .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+              }
+
+              .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 24px;
+              }
+
+              .slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+              }
+
+              input:checked + .slider {
+                background-color: #fd3e81;
+              }
+
+              input:checked + .slider:before {
+                transform: translateX(26px);
+              }
               
               /* Additional mobile styles */
               @media (max-width: 480px) {
@@ -495,6 +683,10 @@
     
     // Initialize the calendar and next week info
     window.onload = function() {
+      // Initialize weekend toggle based on saved preference
+      document.getElementById('weekend-toggle').checked = showWeekends;
+      
+      // Generate calendar
       generateCalendar();
       updateNextWeekInfo();
     };
