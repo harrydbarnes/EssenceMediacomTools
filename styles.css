@@ -348,10 +348,6 @@ input:checked + .slider:before {
     margin-right: 10px;
   }
 
-  /* Don't hide the "Show" text on mobile */
-  .toggle-label .show-text {
-    display: inline;
-  }
   
   /* Calendar cell improvements for mobile */
   .calendar td {
