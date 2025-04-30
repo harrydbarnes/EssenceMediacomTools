@@ -15,6 +15,7 @@ body {
   background-color: #f9f9f9;
   color: #333;
   line-height: 1.6;
+  margin: 0; /* From index.html */
 }
 
 .container {
@@ -34,6 +35,10 @@ header {
 
 h1 {
   font-size: 1.8rem;
+  font-size: clamp(1.2rem, 5vw, 2rem); /* From index.html */
+  white-space: nowrap; /* From index.html */
+  overflow: hidden; /* From index.html */
+  text-overflow: ellipsis; /* From index.html */
 }
 
 .next-week {
@@ -176,7 +181,9 @@ h1 {
   color: #cc0000;
 }
 
-.office-indicator, .festive-indicator, .holiday-indicator {
+.office-indicator,
+.festive-indicator,
+.holiday-indicator {
   margin-top: 10px;
   font-size: 0.8rem;
   font-weight: bold;
@@ -306,17 +313,30 @@ input:checked + .slider:before {
     padding: 5px;
     height: 50px;
   }
-  
+
   .calendar .date {
     font-size: 0.8rem;
   }
-  
-  .office-indicator, .holiday-indicator, .festive-indicator {
+
+  .office-indicator,
+  .holiday-indicator,
+  .festive-indicator {
     font-size: 0.7rem;
   }
-  
+
   h1 {
     font-size: 1.5rem;
+  }
+
+  .calendar-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle-container {
+    margin-left: 0;
+    margin-top: 10px;
+    align-self: flex-end;
   }
 }
 
@@ -324,25 +344,42 @@ input:checked + .slider:before {
   .calendar td {
     padding: 3px;
     height: 40px;
+    position: relative; /* From index.html */
+    min-height: 50px; /* From index.html */
+    padding-bottom: 25px; /* From index.html */
   }
-  
+
   .calendar th {
     padding: 5px;
     font-size: 0.8rem;
   }
-  
+
   .calendar .date {
     font-size: 0.7rem;
+    position: absolute; /* From index.html */
+    top: 2px; /* From index.html */
+    left: 2px; /* From index.html */
   }
-  
-  .office-indicator, .holiday-indicator, .festive-indicator {
+
+  .office-indicator,
+  .holiday-indicator,
+  .festive-indicator {
     font-size: 0.6rem;
+    position: absolute; /* From index.html */
+    bottom: 2px; /* From index.html */
+    left: 0; /* From index.html */
+    right: 0; /* From index.html */
+    text-align: center; /* From index.html */
   }
-  
+
   h1 {
     font-size: 1.2rem;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
+  }
+
+  .container {
+    padding: 10px; /* From index.html */
   }
 }
