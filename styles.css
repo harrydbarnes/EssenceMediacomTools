@@ -143,17 +143,7 @@ h1 {
 
 .calendar .office-day {
   background-color: var(--light-brand);
-  position: relative;
-}
-
-.calendar .office-day::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 4px;
-  background-color: var(--brand-color);
+  border-left: 4px solid var(--brand-color);
 }
 
 .calendar .past-day {
@@ -213,17 +203,7 @@ h1 {
 
 .office-color {
   background-color: var(--light-brand);
-  position: relative;
-}
-
-.office-color::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 4px;
-  background-color: var(--brand-color);
+  border-left: 4px solid var(--brand-color);
 }
 
 .bank-holiday-color {
