@@ -191,11 +191,18 @@ h1 {
   color: #cc0000;
 }
 
+.calendar-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
 .legend {
   display: flex;
   flex-wrap: wrap;
   gap: 15px;
-  margin-top: 20px;
   font-size: 0.9rem;
 }
 
@@ -234,26 +241,15 @@ h1 {
   background-color: #ffeded;
 }
 
-.settings-container {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.settings-title {
-  color: var(--brand-color);
-  margin-bottom: 15px;
-}
-
-.settings-option {
+.toggle-container {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-left: auto; /* Push to the right */
 }
 
-.settings-option label {
-  margin-left: 10px;
+.toggle-label {
+  margin-right: 10px;
+  font-size: 0.9rem; /* Match the legend item font size */
 }
 
 .toggle-switch {
@@ -301,6 +297,28 @@ input:checked + .slider:before {
   transform: translateX(26px);
 }
 
+.settings-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-title {
+  color: var(--brand-color);
+  margin-bottom: 15px;
+}
+
+.settings-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.settings-option label {
+  margin-left: 10px;
+}
+
 @media (max-width: 768px) {
   .calendar td {
     padding: 5px;
@@ -317,6 +335,45 @@ input:checked + .slider:before {
   
   h1 {
     font-size: 1.5rem;
+  }
+  
+  /* Keep calendar options as a row */
+  .calendar-options {
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .legend {
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  /* Don't hide the "Show" text on mobile */
+  .toggle-label .show-text {
+    display: inline;
+  }
+  
+  /* Calendar cell improvements for mobile */
+  .calendar td {
+    position: relative;
+    min-height: 50px;
+    padding-bottom: 25px;
+  }
+  
+  .date {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 0.9rem;
+  }
+  
+  .office-indicator, .holiday-indicator, .festive-indicator {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    font-size: 0.7rem;
+    text-align: center;
   }
 }
 
@@ -344,5 +401,9 @@ input:checked + .slider:before {
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
+  }
+  
+  .container {
+    padding: 10px;
   }
 }
