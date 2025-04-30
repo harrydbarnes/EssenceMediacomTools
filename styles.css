@@ -15,6 +15,7 @@ body {
   background-color: #f9f9f9;
   color: #333;
   line-height: 1.6;
+  margin: 0;
 }
 
 .container {
@@ -34,6 +35,10 @@ header {
 
 h1 {
   font-size: 1.8rem;
+  font-size: clamp(1.2rem, 5vw, 2rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .next-week {
@@ -115,6 +120,7 @@ h1 {
 .calendar {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .calendar th {
@@ -130,7 +136,6 @@ h1 {
   padding: 10px;
   text-align: center;
   height: 60px;
-  width: 14.28%;
   vertical-align: top;
   position: relative;
 }
@@ -139,6 +144,7 @@ h1 {
   font-size: 0.9rem;
   position: absolute;
   top: 5px;
+  left: 5px;
 }
 
 .calendar .office-day {
@@ -181,6 +187,11 @@ h1 {
   font-size: 0.8rem;
   font-weight: bold;
   color: var(--brand-color);
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  text-align: center;
 }
 
 .holiday-indicator {
@@ -234,26 +245,23 @@ h1 {
   background-color: #ffeded;
 }
 
-.settings-container {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.calendar-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 20px;
 }
 
-.settings-title {
-  color: var(--brand-color);
-  margin-bottom: 15px;
-}
-
-.settings-option {
+.toggle-container {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-left: auto;
 }
 
-.settings-option label {
-  margin-left: 10px;
+.toggle-label {
+  margin-right: 10px;
+  font-size: 0.9rem;
 }
 
 .toggle-switch {
@@ -315,15 +323,29 @@ input:checked + .slider:before {
     font-size: 0.7rem;
   }
   
-  h1 {
-    font-size: 1.5rem;
+  .calendar-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .toggle-container {
+    margin-left: 0;
+    margin-top: 10px;
+    align-self: flex-end;
   }
 }
 
 @media (max-width: 480px) {
+  .container {
+    padding: 10px;
+  }
+  
   .calendar td {
     padding: 3px;
     height: 40px;
+    position: relative;
+    min-height: 50px;
+    padding-bottom: 25px;
   }
   
   .calendar th {
@@ -333,10 +355,20 @@ input:checked + .slider:before {
   
   .calendar .date {
     font-size: 0.7rem;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    font-size: 0.9rem;
   }
   
   .office-indicator, .holiday-indicator, .festive-indicator {
     font-size: 0.6rem;
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    font-size: 0.7rem;
+    text-align: center;
   }
   
   h1 {
