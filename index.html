@@ -24,6 +24,11 @@
     /* Mobile optimizations */
     @media (max-width: 480px) {
       .container { padding: 10px; }
+
+    @media (max-width: 768px) { /* Use the same max-width as your layout adjustments */
+      .toggle-label .show-text {
+        display: none; /* Hide the "Show " text on mobile */
+      }
       
       /* Calendar cell improvements for mobile */
       .calendar td {
@@ -114,18 +119,34 @@
       transform: translateX(26px);
     }
 
-    @media (max-width: 768px) {
-      .calendar-options {
-        flex-direction: column;
-        align-items: flex-start;
-      }
+@media (max-width: 768px) { /* Adjust max-width as needed for your definition of mobile */
+  .calendar-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-      .toggle-container {
-        margin-left: 0;
-        margin-top: 10px;
-        align-self: flex-end;
-      }
-    }
+  .toggle-container {
+    margin-left: 0;
+    margin-top: 10px; /* Add some space between the legend and the toggle */
+    align-self: flex-end; /* Align the toggle to the right */
+    width: 100%; /* Make the toggle container take full width */
+    justify-content: flex-end; /* Align toggle content to the right within its container */
+    display: flex; /* Use flex to align label and switch */
+    align-items: center;
+  }
+
+  .toggle-label {
+    margin-right: 10px;
+    /* Potentially adjust font-size for mobile */
+    font-size: 0.9rem; /* Example adjustment */
+  }
+
+  /* Ensure legend items wrap if necessary */
+  .legend {
+    width: 100%; /* Allow legend to take full width and wrap */
+    justify-content: flex-start;
+  }
+}
   </style>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -189,7 +210,7 @@
         </div>
         
         <div class="toggle-container">
-          <span class="toggle-label">Show Weekends</span>
+          <span class="toggle-label"><span class="show-text">Show </span>Weekends</span>
           <label class="toggle-switch">
             <input type="checkbox" id="weekend-toggle" checked>
             <span class="slider"></span>
@@ -221,7 +242,7 @@
     
     // Weekend display preference (default: show weekends)
     let showWeekends = localStorage.getItem('showWeekends') ? 
-      localStorage.getItem('showWeekends') === 'true' : true;
+      localStorage.getItem('showWeekends') === 'true' : false;
     
     // TPO Team rotation patterns and history
     // Important dates to establish pattern:
