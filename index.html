@@ -8,125 +8,6 @@
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="manifest" href="site.webmanifest">
-  <style>
-    /* Inlining critical CSS to prevent flash of unstyled content */
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
-    
-    /* Responsive title */
-    h1 {
-      font-size: clamp(1.2rem, 5vw, 2rem);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    
-    /* Mobile optimizations */
-    @media (max-width: 480px) {
-      .container { padding: 10px; }
-      
-      /* Calendar cell improvements for mobile */
-      .calendar td {
-        position: relative;
-        min-height: 50px;
-        padding-bottom: 25px;
-      }
-      
-      .date {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        font-size: 0.9rem;
-      }
-      
-      .office-indicator, .holiday-indicator, .festive-indicator {
-        position: absolute;
-        bottom: 2px;
-        left: 0;
-        right: 0;
-        font-size: 0.7rem;
-        text-align: center;
-      }
-    }
-
-    /* Toggle switch styles */
-    .calendar-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-top: 20px;
-    }
-
-    .toggle-container {
-      display: flex;
-      align-items: center;
-      margin-left: auto;
-    }
-
-    .toggle-label {
-      margin-right: 10px;
-      font-size: 0.9rem;
-    }
-
-    .toggle-switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 24px;
-    }
-
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .4s;
-      border-radius: 50%;
-    }
-
-    input:checked + .slider {
-      background-color: var(--brand-color);
-    }
-
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-
-    @media (max-width: 768px) {
-      .calendar-options {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .toggle-container {
-        margin-left: 0;
-        margin-top: 10px;
-        align-self: flex-end;
-      }
-    }
-  </style>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -399,111 +280,119 @@
       // Get the total number of days in the month
       const totalDays = lastDay.getDate();
       
-      // Current date counter
-      let date = 1;
+      // Calculate how many rows we need
+      const weekCols = showWeekends ? 7 : 5;
+      const totalCells = firstDayIndex + totalDays;
+      const rowsNeeded = Math.ceil(totalCells / weekCols);
       
-      // Create calendar rows and cells
-      let rowCount = 0;
-      let row = document.createElement('tr');
-      
-      // Add cells from previous month if needed
-      for (let i = 0; i < firstDayIndex; i++) {
-        const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
-        const prevDate = prevMonthLastDay - firstDayIndex + i + 1;
-        const prevMonthDate = new Date(currentYear, currentMonth - 1, prevDate);
+      // Create the table rows
+      for (let row = 0; row < rowsNeeded; row++) {
+        const tableRow = document.createElement('tr');
         
-        // Only add if we're showing weekends or it's a weekday
-        const dayOfWeek = prevMonthDate.getDay();
-        if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-          const cell = createDateCell(prevMonthDate, prevDate, true);
-          row.appendChild(cell);
-        }
-      }
-      
-      // Add cells for current month
-      while (date <= totalDays) {
-        const currentDate = new Date(currentYear, currentMonth, date);
-        const dayOfWeek = currentDate.getDay();
-        
-        // Only add this date if we're showing weekends or it's a weekday
-        if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-          // Create and add the cell
-          const cell = createDateCell(currentDate, date, false);
-          row.appendChild(cell);
+        // Create cells for each day of the week
+        for (let col = 0; col < weekCols; col++) {
+          const dayIndex = row * weekCols + col;
+          const dateOffset = dayIndex - firstDayIndex + 1;
           
-          // If this row is now complete, add it to the calendar and start a new row
-          // Row is complete when:
-          // - We're showing weekends and we've added Sunday (end of week)
-          // - We're not showing weekends and we've added Friday (end of work week)
-          if ((showWeekends && dayOfWeek === 0) || (!showWeekends && dayOfWeek === 5)) {
-            calendarBody.appendChild(row);
-            row = document.createElement('tr');
-          }
-        }
-        
-        date++;
-      }
-      
-      // Add cells from next month if needed to complete the last row
-      if (row.children.length > 0) {
-        let nextMonthDate = 1;
-        while ((showWeekends && row.children.length < 7) || (!showWeekends && row.children.length < 5)) {
-          const nextMonthCurrentDate = new Date(currentYear, currentMonth + 1, nextMonthDate);
-          const dayOfWeek = nextMonthCurrentDate.getDay();
-          
-          // Only add if we're showing weekends or it's a weekday
-          if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-            const cell = createDateCell(nextMonthCurrentDate, nextMonthDate, true);
-            row.appendChild(cell);
+          // Skip weekend columns when not showing weekends
+          if (!showWeekends && (col === 5 || col === 6)) {
+            continue;
           }
           
-          nextMonthDate++;
+          // Create a cell
+          const cell = document.createElement('td');
+          
+          // Check if this cell is part of the current month
+          if (dateOffset < 1) {
+            // Previous month
+            const prevMonth = new Date(currentYear, currentMonth, 0);
+            const prevMonthDay = prevMonth.getDate() + dateOffset;
+            const prevMonthDate = new Date(currentYear, currentMonth - 1, prevMonthDay);
+            
+            cell.innerHTML = `<div class="date">${prevMonthDay}</div>`;
+            cell.classList.add('other-month');
+            
+            // Add indicators for previous month dates
+            if (isOfficeDayForTPO(prevMonthDate)) {
+              cell.classList.add('office-day');
+              cell.innerHTML += `<div class="office-indicator">Office</div>`;
+            }
+            
+            if (isBankHoliday(prevMonthDate)) {
+              cell.classList.add('bank-holiday');
+              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
+            }
+            
+            if (isFestiveBreak(prevMonthDate)) {
+              cell.classList.add('festive-break');
+              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
+            }
+          } 
+          else if (dateOffset > totalDays) {
+            // Next month
+            const nextMonthDay = dateOffset - totalDays;
+            const nextMonthDate = new Date(currentYear, currentMonth + 1, nextMonthDay);
+            
+            cell.innerHTML = `<div class="date">${nextMonthDay}</div>`;
+            cell.classList.add('other-month');
+            
+            // Add indicators for next month dates
+            if (isOfficeDayForTPO(nextMonthDate)) {
+              cell.classList.add('office-day');
+              cell.innerHTML += `<div class="office-indicator">Office</div>`;
+            }
+            
+            if (isBankHoliday(nextMonthDate)) {
+              cell.classList.add('bank-holiday');
+              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
+            }
+            
+            if (isFestiveBreak(nextMonthDate)) {
+              cell.classList.add('festive-break');
+              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
+            }
+          } 
+          else {
+            // Current month
+            const currentDate = new Date(currentYear, currentMonth, dateOffset);
+            
+            cell.innerHTML = `<div class="date">${dateOffset}</div>`;
+            
+            // Check if it's today
+            if (currentDate.getDate() === today.getDate() && 
+                currentDate.getMonth() === today.getMonth() && 
+                currentDate.getFullYear() === today.getFullYear()) {
+              cell.style.border = '2px solid var(--brand-color)';
+              cell.style.fontWeight = 'bold';
+            }
+            
+            // Check if it's a past day
+            if (currentDate < today) {
+              cell.classList.add('past-day');
+            }
+            
+            // Add indicators for current month dates
+            if (isOfficeDayForTPO(currentDate)) {
+              cell.classList.add('office-day');
+              cell.innerHTML += `<div class="office-indicator">Office</div>`;
+            }
+            
+            if (isBankHoliday(currentDate)) {
+              cell.classList.add('bank-holiday');
+              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
+            }
+            
+            if (isFestiveBreak(currentDate)) {
+              cell.classList.add('festive-break');
+              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
+            }
+          }
+          
+          tableRow.appendChild(cell);
         }
         
-        calendarBody.appendChild(row);
+        calendarBody.appendChild(tableRow);
       }
-    }
-    
-    function createDateCell(date, displayDate, isOtherMonth) {
-      const cell = document.createElement('td');
-      cell.innerHTML = `<div class="date">${displayDate}</div>`;
-      
-      if (isOtherMonth) {
-        cell.classList.add('other-month');
-      }
-      
-      // Check if it's today
-      if (date.getDate() === today.getDate() && 
-          date.getMonth() === today.getMonth() && 
-          date.getFullYear() === today.getFullYear()) {
-        cell.style.border = '2px solid var(--brand-color)';
-        cell.style.fontWeight = 'bold';
-      }
-      
-      // Check if it's a past day
-      if (date < today) {
-        cell.classList.add('past-day');
-      }
-      
-      // Check if it's an office day
-      if (isOfficeDayForTPO(date)) {
-        cell.classList.add('office-day');
-        cell.innerHTML += `<div class="office-indicator">Office</div>`;
-      }
-      
-      // Check if it's a bank holiday
-      if (isBankHoliday(date)) {
-        cell.classList.add('bank-holiday');
-        cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
-      }
-      
-      // Check if it's festive break
-      if (isFestiveBreak(date)) {
-        cell.classList.add('festive-break');
-        cell.innerHTML += `<div class="festive-indicator">Break</div>`;
-      }
-      
-      return cell;
     }
     
     function updateNextWeekInfo() {
@@ -571,100 +460,6 @@
       
       // Regenerate calendar with new settings
       generateCalendar();
-    });
-    
-    // Handle CSS loading issues by adding inline styles if external CSS fails
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        // Check if external styles loaded correctly
-        const styles = getComputedStyle(document.body);
-        if (!styles.getPropertyValue('--brand-color').trim()) {
-          // If CSS variables not loaded, apply inline styles
-          document.head.insertAdjacentHTML('beforeend', `
-            <style>
-              :root {
-                --brand-color: #fd3e81;
-                --light-brand: #ffd0e0;
-                --dark-brand: #d01e61;
-              }
-              /* Add critical styles here */
-              header { background-color: #fd3e81; color: white; padding: 10px; }
-              .calendar-nav button { background-color: #fd3e81; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-              .office-day { background-color: #ffd0e0; border-left: 4px solid #fd3e81; }
-              .bank-holiday { background-color: #e6f7ff; border-left: 4px solid #1890ff; }
-              .festive-break { background-color: #fff7e6; border-left: 4px solid #fa8c16; }
-              
-              .calendar td {
-                position: relative;
-                height: 60px;
-                width: 14.28%;
-                vertical-align: top;
-                border: 1px solid #ddd;
-                padding: 5px;
-              }
-
-              /* Toggle switch styles */
-              .toggle-switch {
-                position: relative;
-                display: inline-block;
-                width: 50px;
-                height: 24px;
-              }
-
-              .toggle-switch input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-              }
-
-              .slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: #ccc;
-                transition: .4s;
-                border-radius: 24px;
-              }
-
-              .slider:before {
-                position: absolute;
-                content: "";
-                height: 18px;
-                width: 18px;
-                left: 3px;
-                bottom: 3px;
-                background-color: white;
-                transition: .4s;
-                border-radius: 50%;
-              }
-
-              input:checked + .slider {
-                background-color: #fd3e81;
-              }
-
-              input:checked + .slider:before {
-                transform: translateX(26px);
-              }
-              
-              /* Additional mobile styles */
-              @media (max-width: 480px) {
-                .calendar th {
-                  font-size: 0.8rem;
-                  padding: 2px;
-                }
-                
-                .calendar td {
-                  height: 50px;
-                  padding: 2px;
-                }
-              }
-            </style>
-          `);
-        }
-      }, 500);
     });
     
     // Initialize the calendar and next week info
