@@ -350,28 +350,24 @@
       
       if (showWeekends) {
         // Ensure all 7 days are shown
-        if (headerRow.children.length < 7) {
-          headerRow.innerHTML = `
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-            <th>Sun</th>
-          `;
-        }
+        headerRow.innerHTML = `
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+          <th>Sat</th>
+          <th>Sun</th>
+        `;
       } else {
-        // Remove weekend columns
-        if (headerRow.children.length > 5) {
-          headerRow.innerHTML = `
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-          `;
-        }
+        // Only show weekdays
+        headerRow.innerHTML = `
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+        `;
       }
     }
     
@@ -403,121 +399,111 @@
       // Get the total number of days in the month
       const totalDays = lastDay.getDate();
       
-      // Calculate number of rows needed (including days from prev/next months)
-      const daysPerWeek = showWeekends ? 7 : 5;
-      const totalCells = Math.ceil((totalDays + firstDayIndex) / daysPerWeek) * daysPerWeek;
-      
-      // Get the last day of the previous month
-      const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
-      
+      // Current date counter
       let date = 1;
-      let nextMonthDate = 1;
       
-      // Create calendar rows
-      for (let i = 0; i < totalCells / daysPerWeek; i++) {
-        const row = document.createElement('tr');
+      // Create calendar rows and cells
+      let rowCount = 0;
+      let row = document.createElement('tr');
+      
+      // Add cells from previous month if needed
+      for (let i = 0; i < firstDayIndex; i++) {
+        const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+        const prevDate = prevMonthLastDay - firstDayIndex + i + 1;
+        const prevMonthDate = new Date(currentYear, currentMonth - 1, prevDate);
         
-        // Create cells for each row
-        for (let j = 0; j < daysPerWeek; j++) {
-          // Skip weekend cells if weekends are hidden
-          if (!showWeekends && j >= 5) {
-            continue;
-          }
-          
-          const cell = document.createElement('td');
-          
-          // Fill in days from previous month
-          if (i === 0 && j < firstDayIndex) {
-            const prevDate = prevMonthLastDay - firstDayIndex + j + 1;
-            const prevMonthDate = new Date(currentYear, currentMonth - 1, prevDate);
-            
-            cell.innerHTML = `<div class="date">${prevDate}</div>`;
-            cell.classList.add('other-month');
-            
-            if (isOfficeDayForTPO(prevMonthDate)) {
-              cell.classList.add('office-day');
-              cell.innerHTML += `<div class="office-indicator">Office</div>`;
-            }
-            
-            if (isBankHoliday(prevMonthDate)) {
-              cell.classList.add('bank-holiday');
-              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
-            }
-            
-            if (isFestiveBreak(prevMonthDate)) {
-              cell.classList.add('festive-break');
-              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
-            }
-          }
-          // Fill in days from current month
-          else if (date <= totalDays) {
-            const currentDate = new Date(currentYear, currentMonth, date);
-            
-            cell.innerHTML = `<div class="date">${date}</div>`;
-            
-            // Check if it's today
-            if (currentDate.getDate() === today.getDate() && 
-                currentDate.getMonth() === today.getMonth() && 
-                currentDate.getFullYear() === today.getFullYear()) {
-              cell.style.border = '2px solid var(--brand-color)';
-              cell.style.fontWeight = 'bold';
-            }
-            
-            // Check if it's a past day
-            if (currentDate < today) {
-              cell.classList.add('past-day');
-            }
-            
-            // Check if it's an office day
-            if (isOfficeDayForTPO(currentDate)) {
-              cell.classList.add('office-day');
-              cell.innerHTML += `<div class="office-indicator">Office</div>`;
-            }
-            
-            // Check if it's a bank holiday
-            if (isBankHoliday(currentDate)) {
-              cell.classList.add('bank-holiday');
-              cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
-            }
-            
-            // Check if it's festive break
-            if (isFestiveBreak(currentDate)) {
-              cell.classList.add('festive-break');
-              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
-            }
-            
-            date++;
-          }
-          // Fill in days from next month
-          else {
-            const nextMonthCurrentDate = new Date(currentYear, currentMonth + 1, nextMonthDate);
-            
-            cell.innerHTML = `<div class="date">${nextMonthDate}</div>`;
-            cell.classList.add('other-month');
-            
-            if (isOfficeDayForTPO(nextMonthCurrentDate)) {
-              cell.classList.add('office-day');
-              cell.innerHTML += `<div class="office-indicator">Office</div>`;
-            }
-            
-            if (isBankHoliday(nextMonthCurrentDate)) {
-              cell.classList.add('bank-holiday');
-              cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
-            }
-            
-            if (isFestiveBreak(nextMonthCurrentDate)) {
-              cell.classList.add('festive-break');
-              cell.innerHTML += `<div class="festive-indicator">Break</div>`;
-            }
-            
-            nextMonthDate++;
-          }
-          
+        // Only add if we're showing weekends or it's a weekday
+        const dayOfWeek = prevMonthDate.getDay();
+        if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
+          const cell = createDateCell(prevMonthDate, prevDate, true);
           row.appendChild(cell);
+        }
+      }
+      
+      // Add cells for current month
+      while (date <= totalDays) {
+        const currentDate = new Date(currentYear, currentMonth, date);
+        const dayOfWeek = currentDate.getDay();
+        
+        // Only add this date if we're showing weekends or it's a weekday
+        if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
+          // Create and add the cell
+          const cell = createDateCell(currentDate, date, false);
+          row.appendChild(cell);
+          
+          // If this row is now complete, add it to the calendar and start a new row
+          // Row is complete when:
+          // - We're showing weekends and we've added Sunday (end of week)
+          // - We're not showing weekends and we've added Friday (end of work week)
+          if ((showWeekends && dayOfWeek === 0) || (!showWeekends && dayOfWeek === 5)) {
+            calendarBody.appendChild(row);
+            row = document.createElement('tr');
+          }
+        }
+        
+        date++;
+      }
+      
+      // Add cells from next month if needed to complete the last row
+      if (row.children.length > 0) {
+        let nextMonthDate = 1;
+        while ((showWeekends && row.children.length < 7) || (!showWeekends && row.children.length < 5)) {
+          const nextMonthCurrentDate = new Date(currentYear, currentMonth + 1, nextMonthDate);
+          const dayOfWeek = nextMonthCurrentDate.getDay();
+          
+          // Only add if we're showing weekends or it's a weekday
+          if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
+            const cell = createDateCell(nextMonthCurrentDate, nextMonthDate, true);
+            row.appendChild(cell);
+          }
+          
+          nextMonthDate++;
         }
         
         calendarBody.appendChild(row);
       }
+    }
+    
+    function createDateCell(date, displayDate, isOtherMonth) {
+      const cell = document.createElement('td');
+      cell.innerHTML = `<div class="date">${displayDate}</div>`;
+      
+      if (isOtherMonth) {
+        cell.classList.add('other-month');
+      }
+      
+      // Check if it's today
+      if (date.getDate() === today.getDate() && 
+          date.getMonth() === today.getMonth() && 
+          date.getFullYear() === today.getFullYear()) {
+        cell.style.border = '2px solid var(--brand-color)';
+        cell.style.fontWeight = 'bold';
+      }
+      
+      // Check if it's a past day
+      if (date < today) {
+        cell.classList.add('past-day');
+      }
+      
+      // Check if it's an office day
+      if (isOfficeDayForTPO(date)) {
+        cell.classList.add('office-day');
+        cell.innerHTML += `<div class="office-indicator">Office</div>`;
+      }
+      
+      // Check if it's a bank holiday
+      if (isBankHoliday(date)) {
+        cell.classList.add('bank-holiday');
+        cell.innerHTML += `<div class="holiday-indicator">Bank</div>`;
+      }
+      
+      // Check if it's festive break
+      if (isFestiveBreak(date)) {
+        cell.classList.add('festive-break');
+        cell.innerHTML += `<div class="festive-indicator">Break</div>`;
+      }
+      
+      return cell;
     }
     
     function updateNextWeekInfo() {
