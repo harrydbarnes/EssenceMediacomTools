@@ -374,111 +374,44 @@
 function generateCalendar() {
   const calendarBody = document.getElementById('calendar-body');
   const monthDisplay = document.getElementById('current-month');
-  
-  // Update calendar header based on weekend toggle
   updateCalendarHeader();
-  
-  // Clear existing calendar
   calendarBody.innerHTML = '';
-  
-  // Set the month name
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+
+  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December'];
   monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-  
-  // Get first day of the month
-  const firstDay = new Date(currentYear, currentMonth, 1);
-  
-  // Get last day of the month
-  const lastDay = new Date(currentYear, currentMonth + 1, 0);
-  
-  // Get the day of the week the first day falls on (0-6)
-  // Convert Sunday (0) to be the last day of the week (6) for our Monday-start calendar
-  let firstDayIndex = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-  
-  // Get the total number of days in the month
-  const totalDays = lastDay.getDate();
-  
-  // Number of days to display
-  const daysInWeek = showWeekends ? 7 : 5;
-  
-  // Create calendar weeks
-  let date = 1;
-  let dayOfWeek = firstDayIndex;
-  
-  // Create first week
-  let week = document.createElement('tr');
-  
-  // Add cells from previous month if needed
-  if (firstDayIndex > 0) {
-    const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
-    
-    for (let i = 0; i < firstDayIndex; i++) {
-      const prevDate = prevMonthLastDay - firstDayIndex + i + 1;
-      const prevMonthDate = new Date(currentYear, currentMonth - 1, prevDate);
-      
-      // Skip weekends if not showing them
-      if (!showWeekends && (prevMonthDate.getDay() === 0 || prevMonthDate.getDay() === 6)) {
-        continue;
+
+  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  const totalDays = lastDayOfMonth.getDate();
+
+  let dateCursor = new Date(firstDayOfMonth);
+  dateCursor.setDate(dateCursor.getDate() - ((firstDayOfMonth.getDay() + 6) % 7)); // back to Monday
+
+  while (dateCursor <= lastDayOfMonth || (dateCursor.getDay() !== 1)) {
+    const week = document.createElement('tr');
+
+    for (let i = 0; i < 7; i++) {
+      const currentDay = dateCursor.getDay(); // 0 = Sunday
+      const isWeekend = currentDay === 0 || currentDay === 6;
+
+      if (showWeekends || !isWeekend) {
+        const displayDate = dateCursor.getDate();
+        const isOtherMonth = dateCursor.getMonth() !== currentMonth;
+        const cell = createDateCell(new Date(dateCursor), displayDate, isOtherMonth);
+        week.appendChild(cell);
       }
-      
-      const cell = createDateCell(prevMonthDate, prevDate, true);
-      week.appendChild(cell);
+
+      dateCursor.setDate(dateCursor.getDate() + 1);
     }
-  }
-  
-  // Add days of current month
-  while (date <= totalDays) {
-    const currentDate = new Date(currentYear, currentMonth, date);
-    dayOfWeek = currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1;
-    
-    // Skip weekends if not showing them
-    if (!showWeekends && (currentDate.getDay() === 0 || currentDate.getDay() === 6)) {
-      date++;
-      continue;
+
+    // Only append row if it has cells (to handle filtered weekends)
+    if (week.children.length > 0) {
+      calendarBody.appendChild(week);
     }
-    
-    // Create cell
-    const cell = createDateCell(currentDate, date, false);
-    week.appendChild(cell);
-    
-    // Move to next day
-    date++;
-    
-    // Check if week is complete or if this is the last day
-    const isEndOfWeek = (showWeekends && dayOfWeek === 6) || // Sunday in weekend view
-                     (!showWeekends && dayOfWeek === 4); // Friday in weekday view
-    
-    if (isEndOfWeek || date > totalDays) {
-      // Only add the week if it has cells
-      if (week.children.length > 0) {
-        calendarBody.appendChild(week);
-        week = document.createElement('tr');
-      }
-    }
-  }
-  
-  // Add days from next month to complete the last week if needed
-  if (week.children.length > 0 && week.children.length < daysInWeek) {
-    let nextDate = 1;
-    
-    while (week.children.length < daysInWeek) {
-      const nextMonthDate = new Date(currentYear, currentMonth + 1, nextDate);
-      
-      // Skip weekends if not showing them
-      if (!showWeekends && (nextMonthDate.getDay() === 0 || nextMonthDate.getDay() === 6)) {
-        nextDate++;
-        continue;
-      }
-      
-      const cell = createDateCell(nextMonthDate, nextDate, true);
-      week.appendChild(cell);
-      nextDate++;
-    }
-    
-    calendarBody.appendChild(week);
   }
 }
+
     
     function createDateCell(date, displayDate, isOtherMonth) {
       const cell = document.createElement('td');
