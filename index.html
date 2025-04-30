@@ -399,68 +399,99 @@
       // Get the total number of days in the month
       const totalDays = lastDay.getDate();
       
+      // Number of days to display
+      const daysInWeek = showWeekends ? 7 : 5;
+      
       // Current date counter
       let date = 1;
-      
-      // Create calendar rows and cells
-      let rowCount = 0;
-      let row = document.createElement('tr');
+      let currRow = document.createElement('tr');
       
       // Add cells from previous month if needed
+      const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
+      
       for (let i = 0; i < firstDayIndex; i++) {
-        const prevMonthLastDay = new Date(currentYear, currentMonth, 0).getDate();
         const prevDate = prevMonthLastDay - firstDayIndex + i + 1;
         const prevMonthDate = new Date(currentYear, currentMonth - 1, prevDate);
         
         // Only add if we're showing weekends or it's a weekday
         const dayOfWeek = prevMonthDate.getDay();
-        if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
+        if (showWeekends || (dayOfWeek >= 1 && dayOfWeek <= 5)) {
           const cell = createDateCell(prevMonthDate, prevDate, true);
-          row.appendChild(cell);
+          currRow.appendChild(cell);
         }
       }
       
-      // Add cells for current month
-      while (date <= totalDays) {
-        const currentDate = new Date(currentYear, currentMonth, date);
+      // Add days of current month
+      for (let i = 1; i <= totalDays; i++) {
+        const currentDate = new Date(currentYear, currentMonth, i);
         const dayOfWeek = currentDate.getDay();
         
-        // Only add this date if we're showing weekends or it's a weekday
-        if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-          // Create and add the cell
-          const cell = createDateCell(currentDate, date, false);
-          row.appendChild(cell);
-          
-          // If this row is now complete, add it to the calendar and start a new row
-          // Row is complete when:
-          // - We're showing weekends and we've added Sunday (end of week)
-          // - We're not showing weekends and we've added Friday (end of work week)
-          if ((showWeekends && dayOfWeek === 0) || (!showWeekends && dayOfWeek === 5)) {
-            calendarBody.appendChild(row);
-            row = document.createElement('tr');
-          }
+        // Skip weekends if not showing them
+        if (!showWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
+          continue;
         }
         
-        date++;
+        // Create cell
+        const cell = createDateCell(currentDate, i, false);
+        currRow.appendChild(cell);
+        
+        // Check if row is complete or if this is the last day
+        const isEndOfRow = (showWeekends && dayOfWeek === 0) || // Sunday in weekend view
+                         (!showWeekends && dayOfWeek === 5) || // Friday in weekday view
+                         i === totalDays; // Last day of month
+        
+        const shouldStartNewRow = !isEndOfRow && // Not end of current row
+                                currRow.children.length === daysInWeek; // Row is full
+        
+        // Add row to calendar if it's complete or if this is the last day
+        if (isEndOfRow || shouldStartNewRow) {
+          // If we're on a weekday view and we haven't filled the row, we need to pad it
+          if (!showWeekends && currRow.children.length < 5 && isEndOfRow) {
+            // Calculate how many cells we need to add
+            const cellsToAdd = 5 - currRow.children.length;
+            
+            // Add next month cells if needed
+            for (let j = 1; j <= cellsToAdd; j++) {
+              const nextMonthDate = new Date(currentYear, currentMonth + 1, j);
+              
+              // Skip weekends
+              if (nextMonthDate.getDay() === 0 || nextMonthDate.getDay() === 6) {
+                continue;
+              }
+              
+              const cell = createDateCell(nextMonthDate, j, true);
+              currRow.appendChild(cell);
+              
+              // Break if row is full
+              if (currRow.children.length === 5) {
+                break;
+              }
+            }
+          }
+          
+          calendarBody.appendChild(currRow);
+          currRow = document.createElement('tr');
+        }
       }
       
-      // Add cells from next month if needed to complete the last row
-      if (row.children.length > 0) {
-        let nextMonthDate = 1;
-        while ((showWeekends && row.children.length < 7) || (!showWeekends && row.children.length < 5)) {
-          const nextMonthCurrentDate = new Date(currentYear, currentMonth + 1, nextMonthDate);
-          const dayOfWeek = nextMonthCurrentDate.getDay();
+      // Add next month days to complete the last row if needed
+      if (currRow.children.length > 0) {
+        let nextDate = 1;
+        while (currRow.children.length < daysInWeek) {
+          const nextMonthDate = new Date(currentYear, currentMonth + 1, nextDate);
           
-          // Only add if we're showing weekends or it's a weekday
-          if (showWeekends || (dayOfWeek !== 0 && dayOfWeek !== 6)) {
-            const cell = createDateCell(nextMonthCurrentDate, nextMonthDate, true);
-            row.appendChild(cell);
+          // Skip weekends if not showing them
+          if (!showWeekends && (nextMonthDate.getDay() === 0 || nextMonthDate.getDay() === 6)) {
+            nextDate++;
+            continue;
           }
           
-          nextMonthDate++;
+          const cell = createDateCell(nextMonthDate, nextDate, true);
+          currRow.appendChild(cell);
+          nextDate++;
         }
         
-        calendarBody.appendChild(row);
+        calendarBody.appendChild(currRow);
       }
     }
     
@@ -667,11 +698,13 @@
       }, 500);
     });
     
+    // Set weekend toggle to match stored preference on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('weekend-toggle').checked = showWeekends;
+    });
+    
     // Initialize the calendar and next week info
     window.onload = function() {
-      // Initialize weekend toggle based on saved preference
-      document.getElementById('weekend-toggle').checked = showWeekends;
-      
       // Generate calendar
       generateCalendar();
       updateNextWeekInfo();
