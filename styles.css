@@ -18,6 +18,13 @@
   text-align: center; /* Center the note text */
 }
 
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
 body {
   background-color: #f9f9f9;
   color: #333;
@@ -326,11 +333,46 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 
+/* Responsive layout adjustments */
+@media (min-width: 768px) {
+  .flex-container {
+    flex-direction: row;
+  }
+  
+  .next-week, .team-select {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+ .heading-long {
+    display: block;
+  }
+  
+  .heading-short {
+    display: none;
+  }
+  
+  /* Keep the .next-week margin-bottom we're removing above when in a flex container */
+  .next-week:not(.flex-container .next-week),
+  .team-select:not(.flex-container .team-select) {
+    margin-bottom: 15px;
+  }
+}
+
 @media (max-width: 768px) {
   .calendar td {
     padding: 5px;
     height: 50px;
   }
+
+ .heading-long {
+    display: none;
+  }
+  
+  .heading-short {
+    display: block;
+  }
+}
   
   .calendar .date {
     font-size: 0.8rem;
