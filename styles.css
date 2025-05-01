@@ -140,6 +140,17 @@ h1 {
   text-align: center;
   border: 1px solid #ddd;
   color: #FFFFFF;
+  /* Add border-radius for corners */
+  /* For the first th */
+  &:first-child {
+    border-top-left-radius: 10px;
+  }
+  /* For the last th */
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
+  /* Optional: Add a small radius to all th */
+  /* border-radius: 5px; */
 }
 
 .calendar td {
@@ -150,6 +161,8 @@ h1 {
   width: 14.28%;
   vertical-align: top;
   position: relative;
+  /* Add border-radius for corners */
+  border-radius: 5px; /* Example radius */
 }
 
 .calendar .date {
