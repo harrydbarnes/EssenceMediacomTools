@@ -131,14 +131,15 @@ h1 {
 
 .calendar {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; /* Change to separate */
+  border-spacing: 0; /* Remove space between borders initially */
 }
 
 .calendar th {
   background-color: var(--brand-color);
   padding: 10px;
   text-align: center;
-  border: 1px solid #ddd;
+  border: none; /* Remove borders from th */
   color: #FFFFFF;
   /* Add border-radius for corners */
   /* For the first th */
@@ -149,26 +150,48 @@ h1 {
   &:last-child {
     border-top-right-radius: 10px;
   }
-  /* Optional: Add a small radius to all th */
-  /* border-radius: 5px; */
 }
 
 .calendar td {
-  border: 1px solid #ddd;
+  /* Remove or modify border */
+  border: none; /* Remove borders from td */
   padding: 10px;
   text-align: center;
   height: 60px;
   width: 14.28%;
   vertical-align: top;
   position: relative;
-  /* Add border-radius for corners */
+  /* Keep border-radius for corners */
   border-radius: 5px; /* Example radius */
+  /* Add a subtle box-shadow to simulate borders */
+  box-shadow: 0 0 0 1px #ddd; /* Add a light outline */
+  margin: 0; /* Ensure no default margin */
 }
+
+/* Add back borders for day separation if desired,
+   potentially only on specific sides or with adjusted colors */
+.calendar td + td {
+    box-shadow: 1px 0 0 0 #ddd, 0 1px 0 0 #ddd, 0 0 0 1px #ddd inset; /* Example to add right and bottom border */
+}
+
+.calendar tr:last-child td {
+    box-shadow: 0 0 0 1px #ddd; /* Ensure bottom border for last row */
+}
+
+.calendar tr:last-child td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.calendar tr:last-child td:last-child {
+    border-bottom-right-radius: 5px;
+}
+
 
 .calendar .date {
   font-size: 0.9rem;
   position: absolute;
   top: 5px;
+  left: 5px; /* Adjust position if needed */
 }
 
 .calendar .office-day {
