@@ -416,9 +416,12 @@ input:checked + .slider:before {
     font-size: 0.7rem;
   }
 
+  h1 {
+    font-size: 1.3rem;
+  }
 
   h2 {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
   }
 
   .next-week-days {
@@ -480,7 +483,7 @@ input:checked + .slider:before {
   }
 
   .next-week-days {
-    font-size: 0.9rem; /* Even smaller font on very small screens */
+    font-size: 1rem; /* Even smaller font on very small screens */
   }
 
   .team-select label {
