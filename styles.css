@@ -189,9 +189,11 @@ h1 {
 
 .calendar .date {
   font-size: 0.9rem;
-  position: absolute;
-  top: 5px;
-  left: 5px; /* Adjust position if needed */
+  /* Remove absolute positioning for desktop view */
+  /* position: absolute; */ /* Removed */
+  /* top: 5px; */ /* Removed */
+  /* left: 5px; */ /* Removed */
+  /* The date will be centered horizontally by the td's text-align */
 }
 
 .calendar .office-day {
@@ -408,6 +410,7 @@ input:checked + .slider:before {
   .calendar td {
     padding: 5px;
     height: 50px;
+    text-align: center; /* Center content horizontally */
   }
 
  .heading-long {
@@ -432,11 +435,22 @@ input:checked + .slider:before {
   }
 
   .calendar .date {
+    /* Removed absolute positioning */
+    position: static;
+    display: inline-block; /* Allows text-align to work */
     font-size: 0.8rem;
+    /* Removed top and left */
+    top: auto;
+    left: auto;
   }
 
   .office-indicator, .holiday-indicator, .festive-indicator {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
     font-size: 0.7rem;
+    text-align: center;
   }
 
   h1 {
@@ -477,13 +491,15 @@ input:checked + .slider:before {
     position: relative;
     min-height: 50px;
     padding-bottom: 25px;
+    text-align: center; /* Added for centering content */
   }
 
   .date {
-    position: absolute;
-    top: 2px;
-    left: 2px;
+    position: static; /* Changed from absolute */
+    top: auto; /* Removed */
+    left: auto; /* Removed */
     font-size: 0.9rem;
+    display: inline-block; /* Added for centering */
   }
 
   .office-indicator, .holiday-indicator, .festive-indicator {
@@ -522,6 +538,7 @@ input:checked + .slider:before {
   .calendar td {
     padding: 3px;
     height: 40px;
+    text-align: center; /* Center content horizontally */
   }
 
   .calendar th {
@@ -530,7 +547,11 @@ input:checked + .slider:before {
   }
 
   .calendar .date {
+    position: static; /* Changed from absolute */
+    top: auto; /* Removed */
+    left: auto; /* Removed */
     font-size: 0.7rem;
+    display: inline-block; /* Added for centering */
   }
 
   .office-indicator, .holiday-indicator, .festive-indicator {
