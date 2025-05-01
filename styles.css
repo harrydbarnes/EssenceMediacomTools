@@ -12,10 +12,10 @@
 }
 
 .note {
-  margin-top: 15px; /* Add some space above the note */
+  margin-top: 15px;
   font-size: 0.85rem;
   color: #555;
-  text-align: center; /* Center the note text */
+  text-align: center;
 }
 
 body {
@@ -43,12 +43,26 @@ h1 {
   font-size: 1.8rem;
 }
 
-.next-week {
+/* Style for the container holding next week and team select */
+.next-week-and-team {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Space between the two sections */
+  margin-bottom: 15px;
+}
+
+.next-week,
+.team-select {
+  flex: 1 1 300px; /* Allow sections to grow and shrink, with a base width */
   background-color: white;
   border-radius: 10px;
   padding: 20px;
-  margin-bottom: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Hide mobile title by default */
+.next-week-title-mobile {
+  display: none;
 }
 
 .next-week h2 {
@@ -59,14 +73,6 @@ h1 {
 .next-week-days {
   font-size: 1.2rem;
   font-weight: bold;
-}
-
-.team-select {
-  background-color: white;
-  border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 15px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .team-select label {
@@ -326,20 +332,21 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 
+/* Mobile styles */
 @media (max-width: 768px) {
   .calendar td {
     padding: 5px;
     height: 50px;
   }
-  
+
   .calendar .date {
     font-size: 0.8rem;
   }
-  
+
   .office-indicator, .holiday-indicator, .festive-indicator {
     font-size: 0.7rem;
   }
-  
+
   h1 {
     font-size: 1.5rem;
   }
@@ -347,20 +354,20 @@ input:checked + .slider:before {
   h2 {
     font-size: 1.4rem;
   }
-  
+
   .next-week-days {
     font-size: 1.2rem;
   }
-  
+
   .calendar.month {
     font-size: 1.5rem;
   }
 
  .calendar-nav button {
-    padding: 6px 12px; /* Reduced padding */
-    font-size: 0.9rem; /* Slightly reduced font size (optional) */
+    padding: 6px 12px;
+    font-size: 0.9rem;
   }
-  
+
   /* Keep calendar options as a row */
   .calendar-options {
     flex-wrap: wrap;
@@ -372,21 +379,21 @@ input:checked + .slider:before {
     margin-right: 10px;
   }
 
-  
+
   /* Calendar cell improvements for mobile */
   .calendar td {
     position: relative;
     min-height: 50px;
     padding-bottom: 25px;
   }
-  
+
   .date {
     position: absolute;
     top: 2px;
     left: 2px;
     font-size: 0.9rem;
   }
-  
+
   .office-indicator, .holiday-indicator, .festive-indicator {
     position: absolute;
     bottom: 2px;
@@ -395,6 +402,27 @@ input:checked + .slider:before {
     font-size: 0.7rem;
     text-align: center;
   }
+
+  /* Hide desktop title on mobile */
+  .next-week-title-desktop {
+    display: none;
+  }
+
+  /* Show mobile title on mobile */
+  .next-week-title-mobile {
+    display: inline;
+  }
+
+  .next-week-and-team {
+    flex-direction: column; /* Stack elements vertically on mobile */
+    gap: 15px; /* Space between stacked sections */
+  }
+
+  .next-week,
+  .team-select {
+    flex: none; /* Remove flex basis on mobile for stacking */
+    width: 100%; /* Take full width on mobile */
+  }
 }
 
 @media (max-width: 480px) {
@@ -402,27 +430,27 @@ input:checked + .slider:before {
     padding: 3px;
     height: 40px;
   }
-  
+
   .calendar th {
     padding: 5px;
     font-size: 0.8rem;
   }
-  
+
   .calendar .date {
     font-size: 0.7rem;
   }
-  
+
   .office-indicator, .holiday-indicator, .festive-indicator {
     font-size: 0.6rem;
   }
-  
+
   h1 {
     font-size: 1.2rem;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
   }
-  
+
   .container {
     padding: 10px;
   }
