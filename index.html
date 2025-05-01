@@ -650,6 +650,27 @@ function generateCalendar() {
       document.getElementById('weekend-toggle').checked = showWeekends;
     });
 
+    // Function to update the previous month button text based on screen width
+    function updatePrevButtonText() {
+      const prevButton = document.getElementById('prev-month');
+      // Define the breakpoint for smaller screens (adjust as needed)
+      const mobileBreakpoint = 480; // pixels
+    
+      if (window.innerWidth <= mobileBreakpoint) {
+        // Shorten text for smaller screens
+        prevButton.textContent = '< Prev';
+      } else {
+        // Use full text for larger screens
+        prevButton.textContent = '< Previous';
+      }
+    }
+    
+    // Call the function on page load
+    window.addEventListener('DOMContentLoaded', updatePrevButtonText);
+    
+    // Call the function on window resize
+    window.addEventListener('resize', updatePrevButtonText);
+    
     // Initialize the calendar and next week info
     window.onload = function() {
       // Generate calendar
