@@ -191,6 +191,8 @@ h1 {
   font-size: 0.9rem;
   position: absolute;
   top: 5px;
+  /* left: 5px; */ /* Removed */
+  /* The date will be centered horizontally by the td's text-align */
 }
 
 .calendar .office-day {
@@ -442,12 +444,8 @@ input:checked + .slider:before {
   }
 
   .office-indicator, .holiday-indicator, .festive-indicator {
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    right: 0;
-    font-size: 0.7rem;
-    text-align: center;
+    /* Hide indicators on mobile */
+    display: none;
   }
 
   h1 {
@@ -487,8 +485,10 @@ input:checked + .slider:before {
   .calendar td {
     position: relative;
     min-height: 50px;
-    padding-bottom: 25px;
+    padding-bottom: 25px; /* Keep padding if you have other elements */
     text-align: center; /* Added for centering content */
+    /* Adjust padding-bottom if indicators are hidden and no other elements need the space */
+    padding-bottom: 10px; /* Example: less padding if indicators are hidden */
   }
 
   .date {
@@ -500,12 +500,8 @@ input:checked + .slider:before {
   }
 
   .office-indicator, .holiday-indicator, .festive-indicator {
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    right: 0;
-    font-size: 0.7rem;
-    text-align: center;
+    /* Hide indicators on mobile */
+    display: none;
   }
 }
 
@@ -536,6 +532,8 @@ input:checked + .slider:before {
     padding: 3px;
     height: 40px;
     text-align: center; /* Center content horizontally */
+    /* Adjust padding-bottom if indicators are hidden */
+    padding-bottom: 5px; /* Example: less padding */
   }
 
   .calendar th {
@@ -552,7 +550,8 @@ input:checked + .slider:before {
   }
 
   .office-indicator, .holiday-indicator, .festive-indicator {
-    font-size: 0.6rem;
+    /* Hide indicators on mobile */
+    display: none;
   }
 
   h1 {
