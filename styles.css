@@ -345,15 +345,20 @@ input:checked + .slider:before {
   }
 
   h2 {
-    font-size: 1.5rem;
+    font-size: 1.4rem;
   }
   
   .next-week-days {
-    font-size: 1.5rem;
+    font-size: 1.1rem;
   }
   
   .calendar.month {
     font-size: 1.5rem;
+  }
+
+ .calendar-nav button {
+    padding: 6px 12px; /* Reduced padding */
+    font-size: 0.9rem; /* Slightly reduced font size (optional) */
   }
   
   /* Keep calendar options as a row */
