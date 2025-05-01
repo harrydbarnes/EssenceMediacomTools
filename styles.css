@@ -189,11 +189,8 @@ h1 {
 
 .calendar .date {
   font-size: 0.9rem;
-  /* Remove absolute positioning for desktop view */
-  /* position: absolute; */ /* Removed */
-  /* top: 5px; */ /* Removed */
-  /* left: 5px; */ /* Removed */
-  /* The date will be centered horizontally by the td's text-align */
+  position: absolute;
+  top: 5px;
 }
 
 .calendar .office-day {
