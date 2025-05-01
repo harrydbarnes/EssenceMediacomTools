@@ -336,8 +336,8 @@ input:checked + .slider:before {
   margin-left: 10px;
 }
 
-/* Responsive layout adjustments */
-@media (min-width: 768px) {
+/* Update the breakpoint for the heading display to target larger devices */
+@media (min-width: 880px) { /* Increased from 768px to 880px */
   .flex-container {
     flex-direction: row;
   }
@@ -347,7 +347,7 @@ input:checked + .slider:before {
     margin-bottom: 0;
   }
 
- .heading-long {
+  .heading-long {
     display: block;
   }
 
@@ -362,150 +362,36 @@ input:checked + .slider:before {
   }
 }
 
-/* Set proper sizing for the next-week and team-select within flex container */
-.next-week, .team-select {
-  flex: 1; /* Allow elements to grow and shrink proportionally */
-}
-
-/* Adjust font sizes for smaller screens */
-@media (max-width: 768px) {
-  .calendar td {
-    padding: 5px;
-    height: 50px;
+/* Add a new media query specifically for mid-sized devices like Pixel 9 Pro XL */
+@media (min-width: 600px) and (max-width: 879px) {
+  .heading-long {
+    display: block;
   }
 
- .heading-long {
+  .heading-short {
+    display: none;
+  }
+  
+  .next-week-days {
+    font-size: 1.3rem; /* Increased font size for mid-sized devices */
+  }
+  
+  .next-week h2 {
+    font-size: 1.4rem; /* Increased heading size for mid-sized devices */
+  }
+}
+
+/* Update the mobile breakpoint for heading display */
+@media (max-width: 599px) { /* Changed from 768px to 599px */
+  .heading-long {
     display: none;
   }
 
   .heading-short {
     display: block;
   }
-
+  
   .next-week-days {
-    font-size: 1rem; /* Slightly smaller font on mobile */
-  }
-
-  .team-select {
-    min-width: 120px; /* Ensure minimum width for team select */
-    max-width: 35%; /* Limit maximum width for team select */
-  }
-
-  .next-week {
-    max-width: 65%; /* Allow next-week to take more space */
-  }
-
-  .calendar .date {
-    font-size: 0.8rem;
-  }
-
-  .office-indicator, .holiday-indicator, .festive-indicator {
-    font-size: 0.7rem;
-  }
-
-
-  h2 {
-    font-size: 1.2rem;
-  }
-
-  .next-week-days {
-    font-size: 1.2rem;
-  }
-
-  .calendar.month {
-    font-size: 1.5rem;
-  }
-
- .calendar-nav button {
-    padding: 6px 12px; /* Reduced padding */
-    font-size: 0.9rem; /* Slightly reduced font size (optional) */
-  }
-
-  /* Keep calendar options as a row */
-  .calendar-options {
-    flex-wrap: wrap;
-    justify-content: space-between;
-  }
-
-  .legend {
-    flex: 1;
-    margin-right: 10px;
-  }
-
-
-  /* Calendar cell improvements for mobile */
-  .calendar td {
-    position: relative;
-    min-height: 50px;
-    padding-bottom: 25px;
-  }
-
-  .date {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    font-size: 0.9rem;
-  }
-
-  .office-indicator, .holiday-indicator, .festive-indicator {
-    position: absolute;
-    bottom: 2px;
-    left: 0;
-    right: 0;
-    font-size: 0.7rem;
-    text-align: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .flex-container {
-    gap: 8px; /* Reduce gap on very small screens */
-  }
-
-  .next-week, .team-select {
-    padding: 10px; /* Reduce padding on very small screens */
-  }
-
-  .next-week-days {
-    font-size: 0.9rem; /* Even smaller font on very small screens */
-  }
-
-  .team-select label {
-    margin-bottom: 5px; /* Reduce spacing */
-    font-size: 0.9rem; /* Smaller label text */
-  }
-
-  .team-select select {
-    padding: 5px; /* Smaller padding for select */
-    font-size: 0.9rem; /* Smaller font size */
-  }
-
-  .calendar td {
-    padding: 3px;
-    height: 40px;
-  }
-
-  .calendar th {
-    padding: 5px;
-    font-size: 0.8rem;
-  }
-
-  .calendar .date {
-    font-size: 0.7rem;
-  }
-
-  .office-indicator, .holiday-indicator, .festive-indicator {
-    font-size: 0.6rem;
-  }
-
-  h1 {
-    font-size: 1.2rem;
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-  }
-
-  .container {
-    padding: 10px;
+    font-size: 1rem; /* Keep the original smaller font size for very small devices */
   }
 }
