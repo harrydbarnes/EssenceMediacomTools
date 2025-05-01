@@ -349,7 +349,7 @@ input:checked + .slider:before {
   }
   
   .next-week-days {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
   
   .calendar.month {
