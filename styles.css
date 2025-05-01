@@ -13,7 +13,7 @@
 
 .note {
   margin-top: 15px; /* Add some space above the note */
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: #555;
   text-align: center; /* Center the note text */
 }
@@ -24,7 +24,7 @@
   flex-direction: row !important; /* Force row direction even on mobile */
   justify-content: space-between; /* Space elements evenly */
   gap: 15px;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
   flex-wrap: nowrap; /* Prevent wrapping */
 }
 
@@ -403,12 +403,9 @@ input:checked + .slider:before {
     font-size: 0.7rem;
   }
 
-  h1 {
-    font-size: 1.5rem;
-  }
 
   h2 {
-    font-size: 1.4rem;
+    font-size: 1.2rem;
   }
 
   .next-week-days {
