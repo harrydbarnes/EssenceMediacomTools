@@ -295,11 +295,19 @@ h1 {
   background-color: #ffeded;
 }
 
+.toggle-group { /* Style for the new group on larger screens */
+    display: flex;
+    align-items: center;
+    margin-left: auto; /* Push the whole group to the right */
+}
+
 .toggle-container {
   display: flex;
   align-items: center;
-  margin-left: auto; /* Push to the right */
+  /* Add some space between the toggles on larger screens */
+  margin-left: 20px;
 }
+
 
 .toggle-label {
   margin-right: 10px;
@@ -374,7 +382,7 @@ input:checked + .slider:before {
 }
 
 /* Responsive layout adjustments */
-@media (min-width: 768px) {
+@media (min-width: 769px) { /* Apply larger screen styles from 769px and up */
   .flex-container {
     flex-direction: row;
   }
@@ -397,7 +405,16 @@ input:checked + .slider:before {
   .team-select:not(.flex-container .team-select) {
     margin-bottom: 15px;
   }
+
+    /* Ensure toggle group is a row on larger screens */
+    .toggle-group {
+        flex-direction: row;
+        justify-content: flex-end; /* Align toggles to the right */
+        width: auto; /* Allow group to take needed width */
+         margin-top: 0; /* Remove top margin added for mobile */
+    }
 }
+
 
 /* Set proper sizing for the next-week and team-select within flex container */
 .next-week, .team-select {
@@ -405,7 +422,7 @@ input:checked + .slider:before {
 }
 
 /* Adjust font sizes for smaller screens */
-@media (max-width: 768px) {
+@media (max-width: 768px) { /* Apply smaller screen styles up to 768px */
   .calendar td {
     padding: 5px;
     height: 50px;
@@ -469,15 +486,36 @@ input:checked + .slider:before {
     font-size: 0.9rem; /* Slightly reduced font size (optional) */
   }
 
-  /* Keep calendar options as a row */
+  /* Keep calendar options as a column on mobile */
   .calendar-options {
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: wrap; /* Ensure legend and toggle group wrap */
   }
 
   .legend {
-    flex: 1;
-    margin-right: 10px;
+    width: 100%; /* Allow legend to take full width and wrap */
+    justify-content: flex-start;
+    margin-right: 0; /* Remove margin right on mobile */
+    margin-bottom: 10px; /* Add space below legend */
+  }
+
+  .toggle-group { /* Style for the new group on mobile */
+      display: flex;
+      flex-direction: row; /* Arrange toggles in a row */
+      justify-content: flex-end; /* Align toggles to the right within the group */
+      width: 100%; /* Make the group take full width */
+      margin-left: 0; /* Remove auto margin */
+      margin-top: 0; /* Remove top margin, handled by .calendar-options */
+  }
+
+  .toggle-container {
+      /* Adjust spacing between toggles on mobile */
+      margin-left: 15px; /* Add space between toggles */
+  }
+
+  .toggle-container:first-child {
+      margin-left: 0; /* No left margin for the first toggle */
   }
 
 
@@ -564,4 +602,8 @@ input:checked + .slider:before {
   .container {
     padding: 10px;
   }
+    .toggle-container {
+        /* Adjust spacing between toggles on very small screens */
+        margin-left: 10px;
+    }
 }
