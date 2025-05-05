@@ -162,7 +162,6 @@ h1 {
   vertical-align: top;
   position: relative;
   /* Keep border-radius for corners */
-  border-radius: 5px; /* Example radius */
   /* Add a subtle box-shadow to simulate borders */
   box-shadow: 0 0 0 1px #ddd; /* Add a light outline */
   margin: 0; /* Ensure no default margin */
