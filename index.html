@@ -24,6 +24,7 @@
     /* Mobile optimizations */
     @media (max-width: 480px) {
       .container { padding: 10px; }
+    }
 
     @media (max-width: 768px) { /* Use the same max-width as your layout adjustments */
       .toggle-label .show-text {
@@ -218,11 +219,19 @@
             <span class="slider"></span>
           </label>
         </div>
+        <div class="toggle-container">
+          <span class="toggle-label"><span class="show-text">Show </span>Office Highlight</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="office-highlight-toggle" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
       </div>
       <p class="note">Note: 3pm finish on Fridays are in play from 23rd May - 29th Aug</p>
     </div>
 
-  </div> <script>
+  </div>
+  <script>
     // Bank holidays for UK 2025 (sample data, would need updating yearly)
     const bankHolidays2025 = [
       new Date(2025, 0, 1),  // New Year's Day
@@ -245,6 +254,10 @@
     // Weekend display preference (default: show weekends)
     let showWeekends = localStorage.getItem('showWeekends') ?
       localStorage.getItem('showWeekends') === 'true' : false;
+
+    // Office highlight preference (default: show highlight)
+    let showOfficeHighlight = localStorage.getItem('showOfficeHighlight') ?
+      localStorage.getItem('showOfficeHighlight') === 'true' : true; // Default to true
 
     // TPO Team rotation patterns and history
     // Important dates to establish pattern:
@@ -394,46 +407,47 @@
       }
     }
 
-function generateCalendar() {
-  const calendarBody = document.getElementById('calendar-body');
-  const monthDisplay = document.getElementById('current-month');
-  updateCalendarHeader();
-  calendarBody.innerHTML = '';
+    function generateCalendar() {
+      const calendarBody = document.getElementById('calendar-body');
+      const monthDisplay = document.getElementById('current-month');
+      updateCalendarHeader();
+      calendarBody.innerHTML = '';
 
-  const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                      'July', 'August', 'September', 'October', 'November', 'December'];
-  monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
 
-  const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-  const totalDays = lastDayOfMonth.getDate();
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+      const totalDays = lastDayOfMonth.getDate();
 
-  let dateCursor = new Date(firstDayOfMonth);
-  dateCursor.setDate(dateCursor.getDate() - ((firstDayOfMonth.getDay() + 6) % 7)); // back to Monday
+      let dateCursor = new Date(firstDayOfMonth);
+      dateCursor.setDate(dateCursor.getDate() - ((firstDayOfMonth.getDay() + 6) % 7)); // back to Monday
 
-  while (dateCursor <= lastDayOfMonth || (dateCursor.getDay() !== 1)) {
-    const week = document.createElement('tr');
+      while (dateCursor <= lastDayOfMonth || (dateCursor.getDay() !== 1)) {
+        const week = document.createElement('tr');
 
-    for (let i = 0; i < 7; i++) {
-      const currentDay = dateCursor.getDay(); // 0 = Sunday
-      const isWeekend = currentDay === 0 || currentDay === 6;
+        for (let i = 0; i < 7; i++) {
+          const currentDay = dateCursor.getDay(); // 0 = Sunday
+          const isWeekend = currentDay === 0 || currentDay === 6;
 
-      if (showWeekends || !isWeekend) {
-        const displayDate = dateCursor.getDate();
-        const isOtherMonth = dateCursor.getMonth() !== currentMonth;
-        const cell = createDateCell(new Date(dateCursor), displayDate, isOtherMonth);
-        week.appendChild(cell);
+          if (showWeekends || !isWeekend) {
+            const displayDate = dateCursor.getDate();
+            const isOtherMonth = dateCursor.getMonth() !== currentMonth;
+            const cell = createDateCell(new Date(dateCursor), displayDate, isOtherMonth);
+            week.appendChild(cell);
+          }
+
+          dateCursor.setDate(dateCursor.getDate() + 1);
+        }
+
+        // Only append row if it has cells (to handle filtered weekends)
+        if (week.children.length > 0) {
+          calendarBody.appendChild(week);
+        }
       }
-
-      dateCursor.setDate(dateCursor.getDate() + 1);
     }
-
-    // Only append row if it has cells (to handle filtered weekends)
-    if (week.children.length > 0) {
-      calendarBody.appendChild(week);
-    }
-  }
-}
 
 
     function createDateCell(date, displayDate, isOtherMonth) {
@@ -446,8 +460,8 @@ function generateCalendar() {
 
       // Check if it's today
       if (date.getDate() === today.getDate() &&
-          date.getMonth() === today.getMonth() &&
-          date.getFullYear() === today.getFullYear()) {
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()) {
         cell.style.border = '2px solid var(--brand-color)';
         cell.style.fontWeight = 'bold';
       }
@@ -457,9 +471,13 @@ function generateCalendar() {
         cell.classList.add('past-day');
       }
 
-      // Check if it's an office day
+      // Check if it's an office day and if highlight should be shown
       if (isOfficeDayForTPO(date)) {
         cell.classList.add('office-day');
+        // Add class for highlight only if toggle is checked AND it's the current month
+        if (showOfficeHighlight && !isOtherMonth) {
+            cell.classList.add('show-office-highlight');
+        }
         cell.innerHTML += `<div class="office-indicator">Office</div>`;
       }
 
@@ -545,6 +563,18 @@ function generateCalendar() {
       generateCalendar();
     });
 
+    // Office highlight toggle handler
+    document.getElementById('office-highlight-toggle').addEventListener('change', function() {
+      showOfficeHighlight = this.checked;
+
+      // Save preference to local storage
+      localStorage.setItem('showOfficeHighlight', showOfficeHighlight);
+
+      // Regenerate calendar with new settings
+      generateCalendar();
+    });
+
+
     // Handle CSS loading issues by adding inline styles if external CSS fails
     window.addEventListener('DOMContentLoaded', function() {
       setTimeout(function() {
@@ -562,7 +592,18 @@ function generateCalendar() {
               /* Add critical styles here */
               header { background-color: #fd3e81; color: white; padding: 10px; }
               .calendar-nav button { background-color: #fd3e81; color: white; border: none; padding: 5px 10px; cursor: pointer; }
-              .office-day { background-color: #ffd0e0; border-left: 4px solid #fd3e81; }
+              /* Update office-day style to depend on show-office-highlight class */
+              .office-day { background-color: #ffd0e0; }
+              .office-day.show-office-highlight::before {
+                 content: "";
+                 position: absolute;
+                 top: 0;
+                 left: 0;
+                 height: 100%;
+                 width: 4px;
+                 background-color: var(--brand-color);
+              }
+
               .bank-holiday { background-color: #e6f7ff; border-left: 4px solid #1890ff; }
               .festive-break { background-color: #fff7e6; border-left: 4px solid #fa8c16; }
 
@@ -648,9 +689,10 @@ function generateCalendar() {
       }, 500);
     });
 
-    // Set weekend toggle to match stored preference on page load
+    // Set toggle states to match stored preference on page load
     window.addEventListener('DOMContentLoaded', function() {
       document.getElementById('weekend-toggle').checked = showWeekends;
+      document.getElementById('office-highlight-toggle').checked = showOfficeHighlight;
     });
 
     // Function to update the previous month button text based on screen width
@@ -658,7 +700,7 @@ function generateCalendar() {
       const prevButton = document.getElementById('prev-month');
       // Define the breakpoint for smaller screens (adjust as needed)
       const mobileBreakpoint = 480; // pixels
-    
+
       if (window.innerWidth <= mobileBreakpoint) {
         // Shorten text for smaller screens
         prevButton.textContent = '< Prev';
@@ -667,13 +709,13 @@ function generateCalendar() {
         prevButton.textContent = '< Previous';
       }
     }
-    
+
     // Call the function on page load
     window.addEventListener('DOMContentLoaded', updatePrevButtonText);
-    
+
     // Call the function on window resize
     window.addEventListener('resize', updatePrevButtonText);
-    
+
     // Initialize the calendar and next week info
     window.onload = function() {
       // Generate calendar
