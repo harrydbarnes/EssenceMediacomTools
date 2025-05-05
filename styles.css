@@ -199,7 +199,8 @@ h1 {
   position: relative;
 }
 
-.calendar .office-day::before {
+/* Modify the rule to only apply the border when show-office-highlight class is present */
+.calendar .office-day.show-office-highlight::before {
   content: "";
   position: absolute;
   top: 0;
