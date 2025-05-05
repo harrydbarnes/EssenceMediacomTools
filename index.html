@@ -64,10 +64,16 @@
       margin-top: 20px;
     }
 
+    .toggle-group { /* New class to group toggles */
+        display: flex;
+        align-items: center;
+        /* Remove margin-left: auto here, add it to .toggle-group for larger screens */
+    }
+
     .toggle-container {
       display: flex;
       align-items: center;
-      margin-left: auto;
+      /* Remove margin-left: auto here, handled by .toggle-group */
     }
 
     .toggle-label {
@@ -122,17 +128,24 @@
 
 @media (max-width: 768px) { /* Adjust max-width as needed for your definition of mobile */
   .calendar-options {
-    flex-direction: column;
+    flex-direction: column; /* Keep column for legend and toggle group */
     align-items: flex-start;
   }
 
+  .toggle-group { /* Apply flex row to the new group on mobile */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Space out the toggles */
+    width: 100%; /* Ensure group takes full width */
+    margin-top: 10px; /* Add space above the toggles */
+  }
+
   .toggle-container {
-    margin-left: 0;
-    margin-top: 10px; /* Add some space between the legend and the toggle */
-    align-self: flex-end; /* Align the toggle to the right */
-    width: 100%; /* Make the toggle container take full width */
-    justify-content: flex-end; /* Align toggle content to the right within its container */
-    display: flex; /* Use flex to align label and switch */
+    /* Adjust styling for side-by-side layout on mobile */
+    margin-left: 0; /* Remove auto margin */
+    align-self: auto; /* Remove align-self */
+    justify-content: flex-start; /* Align content to the start */
+    display: flex;
     align-items: center;
   }
 
@@ -212,19 +225,20 @@
           </div>
         </div>
 
-        <div class="toggle-container">
-          <span class="toggle-label"><span class="show-text">Show </span>Weekends</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="weekend-toggle" checked>
-            <span class="slider"></span>
-          </label>
-        </div>
-        <div class="toggle-container">
-          <span class="toggle-label"><span class="show-text">Show </span>Office Highlight</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="office-highlight-toggle" checked>
-            <span class="slider"></span>
-          </label>
+        <div class="toggle-group"> <div class="toggle-container">
+              <span class="toggle-label"><span class="show-text">Show </span>Weekends</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="weekend-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-container">
+              <span class="toggle-label"><span class="show-text">Show </span>Office Highlight</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="office-highlight-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
         </div>
       </div>
       <p class="note">Note: 3pm finish on Fridays are in play from 23rd May - 29th Aug</p>
