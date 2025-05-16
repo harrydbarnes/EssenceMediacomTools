@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EMC Office Days</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <style>
+    /* Inlining critical CSS to prevent flash of unstyled content */
+    body { margin: 0; /* REMOVED: font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */ }
+    .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+    /* Responsive title */
+    h1 {
+      font-size: clamp(1.2rem, 5vw, 2rem);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Mobile optimizations */
+    @media (max-width: 480px) {
+      .container { padding: 10px; }
+    }
+
+    @media (max-width: 768px) { /* Use the same max-width as your layout adjustments */
+      .toggle-label .show-text {
+        display: none; /* Hide the "Show " text on mobile */
+      }
+
+      /* Calendar cell improvements for mobile */
+      .calendar td {
+        position: relative;
+        min-height: 50px;
+        padding-bottom: 25px;
+      }
+
+      .date {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        font-size: 0.9rem;
+      }
+
+      .office-indicator, .holiday-indicator, .festive-indicator {
+        position: absolute;
+        bottom: 2px;
+        left: 0;
+        right: 0;
+        font-size: 0.7rem;
+        text-align: center;
+      }
+    }
+
+    /* Toggle switch styles */
+    .calendar-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .toggle-group { /* New class to group toggles */
+        display: flex;
+        align-items: center;
+        /* Remove margin-left: auto here, add it to .toggle-group for larger screens */
+    }
+
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      /* Remove margin-left: auto here, handled by .toggle-group */
+    }
+
+    .toggle-label {
+      margin-right: 10px;
+      font-size: 0.7rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 24px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 24px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: var(--brand-color);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(26px);
+    }
+
+@media (max-width: 768px) { /* Adjust max-width as needed for your definition of mobile */
+  .calendar-options {
+    flex-direction: column; /* Keep column for legend and toggle group */
+    align-items: flex-start;
+  }
+
+  .toggle-group { /* Apply flex row to the new group on mobile */
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; /* Space out the toggles */
+    width: 100%; /* Ensure group takes full width */
+    margin-top: 10px; /* Add space above the toggles */
+  }
+
+  .toggle-container {
+    /* Adjust styling for side-by-side layout on mobile */
+    margin-left: 0; /* Remove auto margin */
+    align-self: auto; /* Remove align-self */
+    justify-content: flex-start; /* Align content to the start */
+    display: flex;
+    align-items: center;
+  }
+
+  .toggle-label {
+    margin-right: 10px;
+    /* Potentially adjust font-size for mobile */
+    font-size: 0.9rem; /* Example adjustment */
+  }
+
+  /* Ensure legend items wrap if necessary */
+  .legend {
+    width: 100%; /* Allow legend to take full width and wrap */
+    justify-content: flex-start;
+  }
+}
+
+  </style>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>EssenceMediacom Office Days</h1>
+    </header>
+
+    <div class="flex-container">
+      <div class="next-week">
+        <h2 class="heading-long">Coming up next week:</h2>
+        <h2 class="heading-short">Next week:</h2>
+        <div class="next-week-days" id="next-week-days">Loading...</div>
+      </div>
+
+      <div class="team-select">
+        <label for="team">Select Team:</label>
+        <select id="team">
+          <option value="TPO" selected>TPO</option>
+        </select>
+      </div>
+    </div>
+
+    <!--
+<div id="chrome-extension-section" class="chrome-extension-section" style="display: none;">
+  <h2 class="extension-title">
+    New: Chrome Extension - <a href="https://github.com/harrydbarnes/Prisma-Tools/releases" target="_blank" rel="noopener noreferrer" class="download-link">Download Here!</a>
+  </h2>
+</div>
+-->
+
+    <div class="calendar-container">
+      <div class="calendar-nav">
+        <button id="prev-month">&lt; Previous</button>
+        <div class="calendar-month" id="current-month">April 2025</div>
+        <button id="next-month">Next &gt;</button>
+      </div>
+
+      <table class="calendar" id="calendar">
+        <thead id="calendar-header">
+          <tr>
+            <th>Mon</th>
+            <th>Tue</th>
+            <th>Wed</th>
+            <th>Thu</th>
+            <th>Fri</th>
+            <th>Sat</th>
+            <th>Sun</th>
+          </tr>
+        </thead>
+        <tbody id="calendar-body">
+          </tbody>
+      </table>
+
+      <div class="calendar-options">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="legend-color office-color"></div>
+            <span>Office Day</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color bank-holiday-color"></div>
+            <span>Bank Holiday</span>
+          </div>
+          <div class="legend-item">
+            <div class="legend-color festive-break-color"></div>
+            <span>Festive Break (Dec 25-31 - TBC)</span>
+          </div>
+        </div>
+
+        <div class="toggle-group"> <div class="toggle-container">
+              <span class="toggle-label"><span class="show-text">Show </span>Weekends</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="weekend-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="toggle-container">
+              <span class="toggle-label"><span class="show-text">Show </span>Office Highlight</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="office-highlight-toggle" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+        </div>
+      </div>
+      <p class="note">3pm finish on Fridays are in play from 23rd May - 29th Aug</p>
+    </div>
+
+  </div>
+  <script>
+    // Bank holidays for UK 2025 (sample data, would need updating yearly)
+    const bankHolidays2025 = [
+      new Date(2025, 0, 1),  // New Year's Day
+      new Date(2025, 3, 18), // Good Friday
+      new Date(2025, 3, 21), // Easter Monday
+      new Date(2025, 4, 5),  // Early May Bank Holiday
+      new Date(2025, 4, 26), // Spring Bank Holiday
+      new Date(2025, 7, 25), // Summer Bank Holiday
+      new Date(2025, 11, 25), // Christmas Day
+      new Date(2025, 11, 26)  // Boxing Day
+    ];
+
+    // Current date (used for highlighting today and determining past days)
+    const today = new Date();
+
+    // Default view (current month)
+    let currentMonth = today.getMonth();
+    let currentYear = today.getFullYear();
+
+    // Weekend display preference (default: show weekends)
+    let showWeekends = localStorage.getItem('showWeekends') ?
+      localStorage.getItem('showWeekends') === 'true' : false;
+
+    // Office highlight preference (default: show highlight)
+    let showOfficeHighlight = localStorage.getItem('showOfficeHighlight') ?
+      localStorage.getItem('showOfficeHighlight') === 'true' : true; // Default to true
+
+    // TPO Team rotation patterns and history
+    // Important dates to establish pattern:
+    // Mar 31, 2025: Mon, Wed, Thu pattern
+    // Apr 7, 2025: Tue, Wed, Fri pattern
+    // Apr 14, 2025: Tue, Wed, Fri pattern
+    // Apr 21, 2025: Mon, Wed, Thu pattern
+    // Apr 28, 2025: Mon, Wed, Thu pattern
+    // May 5, 2025: Tue, Wed, Fri pattern
+    // May 12, 2025: Tue, Wed, Fri pattern
+    // May 19, 2025: Mon, Wed, Thu pattern
+    // May 26, 2025: Mon, Wed, Thu pattern
+    // Jun 2, 2025: Tue, Wed, Fri pattern
+    // Jun 9, 2025: Tue, Wed, Fri pattern
+    // Then repeat the 4-week cycle
+
+    function getPatternStartDates() {
+      // These dates mark the starts of different rotation patterns
+      return [
+        new Date(2025, 2, 31), // Mar 31, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 3, 7),  // Apr 7, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 3, 14), // Apr 14, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 3, 21), // Apr 21, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 3, 28), // Apr 28, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 4, 5),  // May 5, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 4, 12), // May 12, 2025: Tue, Wed, Fri pattern
+        new Date(2025, 4, 19), // May 19, 2025: Mon, Wed, Thu pattern
+        new Date(2025, 4, 26)  // May 26, 2025: Mon, Wed, Thu pattern
+      ];
+    }
+
+    function isPatternA(date) {
+      // Pattern A: Monday, Wednesday, Thursday
+      const startDates = getPatternStartDates();
+
+      // Create a reference date for the 4-week cycle (June 2, 2025)
+      const cycleReferenceDate = new Date(2025, 5, 2); // June 2, 2025
+
+      // For dates before our known history, use the 4-week cycle logic
+      if (date < startDates[0]) {
+        // Calculate 4-week cycles backwards
+        const daysBefore = Math.ceil((startDates[0] - date) / (24 * 60 * 60 * 1000));
+        const weeksBefore = Math.ceil(daysBefore / 7);
+        const cyclePosition = weeksBefore % 4;
+
+        // If it's in the first or second position of a backwards cycle from Mar 31
+        return cyclePosition === 1 || cyclePosition === 0;
+      }
+
+      // For known history dates, use explicit pattern assignments
+      for (let i = 0; i < startDates.length; i++) {
+        // Create end date for this period (start of next period or +1 week for the last one)
+        const endDate = i < startDates.length - 1 ?
+                        startDates[i + 1] :
+                        new Date(startDates[i].getTime() + (7 * 24 * 60 * 60 * 1000));
+
+        if (date >= startDates[i] && date < endDate) {
+          // Pattern A: Mon, Wed, Thu pattern periods
+          if (i === 0 || i === 3 || i === 4 || i === 7 || i === 8) {
+            return true;
+          }
+          // Pattern B: Tue, Wed, Fri pattern periods
+          return false;
+        }
+      }
+
+      // For dates after our explicit history, use 4-week cycle
+      if (date >= new Date(2025, 5, 2)) { // June 2, 2025 and beyond
+        // Calculate weeks since reference date
+        const daysAfter = Math.floor((date - cycleReferenceDate) / (24 * 60 * 60 * 1000));
+        const weeksAfter = Math.floor(daysAfter / 7);
+        const cyclePosition = weeksAfter % 4;
+
+        // Pattern A (Mon, Wed, Thu) is weeks 3 and 4 of the cycle
+        // Pattern B (Tue, Wed, Fri) is weeks 1 and 2 of the cycle
+        return cyclePosition === 2 || cyclePosition === 3;
+      }
+
+      // Fallback (shouldn't reach here)
+      return false;
+    }
+
+    function isOfficeDayForTPO(date) {
+      // Check if it's a weekend
+      if (date.getDay() === 0 || date.getDay() === 6) {
+        return false;
+      }
+
+      // Check if it's a bank holiday
+      if (isBankHoliday(date)) {
+        return false;
+      }
+
+      // Check if it's festive break (Dec 25-31)
+      if (isFestiveBreak(date)) {
+        return false;
+      }
+
+      const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+      // Pattern A: Monday (1), Wednesday (3), Thursday (4)
+      if (isPatternA(date)) {
+        return dayOfWeek === 1 || dayOfWeek === 3 || dayOfWeek === 4;
+      }
+      // Pattern B: Tuesday (2), Wednesday (3), Friday (5)
+      else {
+        return dayOfWeek === 2 || dayOfWeek === 3 || dayOfWeek === 5;
+      }
+    }
+
+    function isBankHoliday(date) {
+      return bankHolidays2025.some(holiday =>
+        holiday.getDate() === date.getDate() &&
+        holiday.getMonth() === date.getMonth() &&
+        holiday.getFullYear() === date.getFullYear()
+      );
+    }
+
+    function isFestiveBreak(date) {
+      // December 25-31 (TBC)
+      return (date.getMonth() === 11 && date.getDate() >= 25 && date.getDate() <= 31);
+    }
+
+    function updateCalendarHeader() {
+      const headerRow = document.querySelector('#calendar-header tr');
+
+      if (showWeekends) {
+        // Ensure all 7 days are shown
+        headerRow.innerHTML = `
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+          <th>Sat</th>
+          <th>Sun</th>
+        `;
+      } else {
+        // Only show weekdays
+        headerRow.innerHTML = `
+          <th>Mon</th>
+          <th>Tue</th>
+          <th>Wed</th>
+          <th>Thu</th>
+          <th>Fri</th>
+        `;
+      }
+    }
+
+    function generateCalendar() {
+      const calendarBody = document.getElementById('calendar-body');
+      const monthDisplay = document.getElementById('current-month');
+      updateCalendarHeader();
+      calendarBody.innerHTML = '';
+
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December'
+      ];
+      monthDisplay.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+      const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+      const totalDays = lastDayOfMonth.getDate();
+
+      let dateCursor = new Date(firstDayOfMonth);
+      dateCursor.setDate(dateCursor.getDate() - ((firstDayOfMonth.getDay() + 6) % 7)); // back to Monday
+
+      while (dateCursor <= lastDayOfMonth || (dateCursor.getDay() !== 1)) {
+        const week = document.createElement('tr');
+
+        for (let i = 0; i < 7; i++) {
+          const currentDay = dateCursor.getDay(); // 0 = Sunday
+          const isWeekend = currentDay === 0 || currentDay === 6;
+
+          if (showWeekends || !isWeekend) {
+            const displayDate = dateCursor.getDate();
+            const isOtherMonth = dateCursor.getMonth() !== currentMonth;
+            const cell = createDateCell(new Date(dateCursor), displayDate, isOtherMonth);
+            week.appendChild(cell);
+          }
+
+          dateCursor.setDate(dateCursor.getDate() + 1);
+        }
+
+        // Only append row if it has cells (to handle filtered weekends)
+        if (week.children.length > 0) {
+          calendarBody.appendChild(week);
+        }
+      }
+    }
+
+
+    function createDateCell(date, displayDate, isOtherMonth) {
+      const cell = document.createElement('td');
+      cell.innerHTML = `<div class="date">${displayDate}</div>`;
+
+      if (isOtherMonth) {
+        cell.classList.add('other-month');
+      }
+
+      // Check if it's today
+      if (date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()) {
+        cell.style.border = '2px solid var(--brand-color)';
+        cell.style.fontWeight = 'bold';
+      }
+
+      // Check if it's a past day
+      if (date < today) {
+        cell.classList.add('past-day');
+      }
+
+      // Check if it's an office day and if highlight should be shown
+      if (isOfficeDayForTPO(date)) {
+        cell.classList.add('office-day');
+        // Add class for highlight only if toggle is checked AND it's the current month
+        if (showOfficeHighlight && !isOtherMonth) {
+            cell.classList.add('show-office-highlight');
+        }
+        cell.innerHTML += `<div class="office-indicator">Office</div>`;
+      }
+
+      // Check if it's a bank holiday
+      if (isBankHoliday(date)) {
+        cell.classList.add('bank-holiday');
+        cell.innerHTML += `<div class="holiday-indicator">Bank Holiday</div>`;
+      }
+
+      // Check if it's festive break
+      if (isFestiveBreak(date)) {
+        cell.classList.add('festive-break');
+        cell.innerHTML += `<div class="festive-indicator">Break</div>`;
+      }
+
+      return cell;
+    }
+
+    function updateNextWeekInfo() {
+      const nextWeekDaysEl = document.getElementById('next-week-days');
+      const nextMonday = new Date();
+
+      // Find the next Monday
+      while (nextMonday.getDay() !== 1) {
+        nextMonday.setDate(nextMonday.getDate() + 1);
+      }
+
+      // Check which days are office days for the next week
+      const officeDays = [];
+      for (let i = 0; i < 5; i++) { // Check Monday to Friday
+        const checkDate = new Date(nextMonday);
+        checkDate.setDate(nextMonday.getDate() + i);
+
+        if (isOfficeDayForTPO(checkDate)) {
+          // Use shortened day names for mobile compatibility
+          const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+          officeDays.push(dayNames[checkDate.getDay()]);
+        }
+      }
+
+      if (officeDays.length > 0) {
+        nextWeekDaysEl.textContent = officeDays.join(', ');
+      } else {
+        nextWeekDaysEl.textContent = 'No office days next week';
+      }
+    }
+
+    // Navigation functions
+    document.getElementById('prev-month').addEventListener('click', () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      generateCalendar();
+    });
+
+    document.getElementById('next-month').addEventListener('click', () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      generateCalendar();
+    });
+
+    // Team selection change handler
+    document.getElementById('team').addEventListener('change', () => {
+      // Currently only TPO is implemented
+      // This would be expanded when more teams are added
+      generateCalendar();
+      updateNextWeekInfo();
+    });
+
+    // Weekend toggle handler
+    document.getElementById('weekend-toggle').addEventListener('change', function() {
+      showWeekends = this.checked;
+
+      // Save preference to local storage
+      localStorage.setItem('showWeekends', showWeekends);
+
+      // Regenerate calendar with new settings
+      generateCalendar();
+    });
+
+    // Office highlight toggle handler
+    document.getElementById('office-highlight-toggle').addEventListener('change', function() {
+      showOfficeHighlight = this.checked;
+
+      // Save preference to local storage
+      localStorage.setItem('showOfficeHighlight', showOfficeHighlight);
+
+      // Regenerate calendar with new settings
+      generateCalendar();
+    });
+
+
+    // Handle CSS loading issues by adding inline styles if external CSS fails
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        // Check if external styles loaded correctly
+        const styles = getComputedStyle(document.body);
+        if (!styles.getPropertyValue('--brand-color').trim()) {
+          // If CSS variables not loaded, apply inline styles
+          document.head.insertAdjacentHTML('beforeend', `
+            <style>
+              :root {
+                --brand-color: #fd3e81;
+                --light-brand: #ffd0e0;
+                --dark-brand: #d01e61;
+              }
+              /* Add critical styles here */
+              header { background-color: #fd3e81; color: white; padding: 10px; }
+              .calendar-nav button { background-color: #fd3e81; color: white; border: none; padding: 5px 10px; cursor: pointer; }
+              /* Update office-day style to depend on show-office-highlight class */
+              .office-day { background-color: #ffd0e0; }
+              .office-day.show-office-highlight::before {
+                 content: "";
+                 position: absolute;
+                 top: 0;
+                 left: 0;
+                 height: 100%;
+                 width: 4px;
+                 background-color: var(--brand-color);
+              }
+
+              .bank-holiday { background-color: #e6f7ff; border-left: 4px solid #1890ff; }
+              .festive-break { background-color: #fff7e6; border-left: 4px solid #fa8c16; }
+
+              .calendar td {
+                position: relative;
+                height: 60px;
+                width: 14.28%;
+                vertical-align: top;
+                border: 1px solid #ddd;
+                padding: 5px;
+              }
+
+              /* Toggle switch styles */
+              .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 24px;
+              }
+
+              .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+              }
+
+              .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 24px;
+              }
+
+              .slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+              }
+
+              input:checked + .slider {
+                background-color: #fd3e81;
+              }
+
+              input:checked + .slider:before {
+                transform: translateX(26px);
+              }
+
+              /* Additional mobile styles */
+              @media (max-width: 480px) {
+                .calendar th {
+                  font-size: 0.8rem;
+                  padding: 2px;
+                }
+
+                .calendar td {
+                  height: 50px;
+                  padding: 2px;
+                }
+              }
+
+              /* Style for the note */
+              .note {
+                margin-top: 15px; /* Add some space above the note */
+                font-size: 0.7rem; /* Adjusted font size slightly for potentially smaller notes */
+                color: #555;
+                text-align: center; /* Center the note text */
+              }
+
+            </style>
+          `);
+        }
+      }, 500);
+    });
+
+    // Set toggle states to match stored preference on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('weekend-toggle').checked = showWeekends;
+      document.getElementById('office-highlight-toggle').checked = showOfficeHighlight;
+    });
+
+    // --- START: Chrome Extension Section Logic (Updated ID and isChrome check) ---
+    window.addEventListener('DOMContentLoaded', function() {
+      // console.log("Chrome Extension Section script running..."); // Keep or remove these logs as you prefer
+
+      const extensionSection = document.getElementById('chrome-extension-section');
+      // console.log("extensionSection found:", !!extensionSection);
+
+      const userAgent = navigator.userAgent;
+      // console.log("User Agent:", userAgent);
+      
+      const isChrome = (!!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime)) || /Chrome/.test(userAgent);
+      // console.log("isChrome (updated check):", isChrome); 
+
+      const isDesktop = !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent));
+      // console.log("isDesktop:", isDesktop);
+
+      if (extensionSection && isChrome && isDesktop) {
+        // console.log("Conditions MET: Showing section.");
+        extensionSection.style.display = 'block'; 
+        setTimeout(() => {
+          extensionSection.classList.add('visible');
+        }, 100); 
+      } else {
+        // console.log("Conditions NOT MET: Section will remain hidden.");
+        // if (!extensionSection) console.log("Reason: extensionSection element not found.");
+        // if (!isChrome) console.log("Reason: Not detected as Chrome by either method.");
+        // if (!isDesktop) console.log("Reason: Not detected as Desktop.");
+      }
+    });
+    // --- END: Chrome Extension Section Logic ---
+
+
+    // Function to update the previous month button text based on screen width
+    function updatePrevButtonText() {
+      const prevButton = document.getElementById('prev-month');
+      // Define the breakpoint for smaller screens (adjust as needed)
+      const mobileBreakpoint = 480; // pixels
+
+      if (window.innerWidth <= mobileBreakpoint) {
+        // Shorten text for smaller screens
+        prevButton.textContent = '< Prev';
+      } else {
+        // Use full text for larger screens
+        prevButton.textContent = '< Previous';
+      }
+    }
+
+    // Call the function on page load
+    window.addEventListener('DOMContentLoaded', updatePrevButtonText);
+
+    // Call the function on window resize
+    window.addEventListener('resize', updatePrevButtonText);
+
+    // Initialize the calendar and next week info
+    window.onload = function() {
+      // Generate calendar
+      generateCalendar();
+      updateNextWeekInfo();
+    };
+  </script>
+</body>
+</html>

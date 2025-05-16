@@ -1,0 +1,700 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+:root {
+  --brand-color: #fd3e81;
+  --light-brand: #ffd0e0;
+  --dark-brand: #d01e61;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Outfit", sans-serif;
+}
+
+.note {
+  margin-top: 15px; /* Add some space above the note */
+  font-size: 0.75rem;
+  color: #555;
+  text-align: center; /* Center the note text */
+}
+
+/* First, ensure the flex container stays as row for all screen sizes */
+.flex-container {
+  display: flex;
+  flex-direction: row !important; /* Force row direction even on mobile */
+  justify-content: space-between; /* Space elements evenly */
+  gap: 15px;
+  margin-bottom: 15px; /* Space between this and the new extension section */
+  flex-wrap: nowrap; /* Prevent wrapping */
+}
+
+body {
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+  font-family: "Outfit", sans-serif;
+}
+
+.container {
+  max-width: 950px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+header {
+  background-color: var(--brand-color);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 15px;
+}
+
+h1 {
+  font-size: 1.8rem;
+  letter-spacing: 0.5px; 
+}
+
+.next-week {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.next-week h2 {
+  color: var(--brand-color);
+  margin-bottom: 10px;
+  letter-spacing: 0.3px; 
+}
+
+.next-week-days {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.team-select {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.team-select label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.team-select select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.calendar-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin-bottom: 15px;
+}
+
+.calendar-nav {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative; 
+}
+
+.calendar-nav button {
+  background-color: var(--brand-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.calendar-nav button:hover {
+  background-color: var(--dark-brand);
+}
+
+.calendar-month {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--brand-color);
+  text-align: center; 
+}
+
+.calendar {
+  width: 100%;
+  border-collapse: separate; 
+  border-spacing: 0; 
+}
+
+.calendar th {
+  background-color: var(--brand-color);
+  padding: 10px;
+  text-align: center;
+  border: none; 
+  color: #FFFFFF;
+  &:first-child {
+    border-top-left-radius: 10px;
+  }
+  &:last-child {
+    border-top-right-radius: 10px;
+  }
+}
+
+.calendar td {
+  border: none; 
+  padding: 10px;
+  text-align: center;
+  height: 60px;
+  width: 14.28%;
+  vertical-align: top;
+  position: relative;
+  box-shadow: 0 0 0 1px #ddd; 
+  margin: 0; 
+}
+
+.calendar td + td {
+    box-shadow: 1px 0 0 0 #ddd, 0 1px 0 0 #ddd, 0 0 0 1px #ddd inset; 
+}
+
+.calendar tr:last-child td {
+    box-shadow: 0 0 0 1px #ddd; 
+}
+
+.calendar tr:last-child td:first-child {
+    border-bottom-left-radius: 5px;
+}
+
+.calendar tr:last-child td:last-child {
+    border-bottom-right-radius: 5px;
+}
+
+
+.calendar .date {
+  font-size: 0.9rem;
+  position: absolute;
+  top: 5px;
+}
+
+.calendar .office-day {
+  background-color: var(--light-brand);
+  position: relative;
+}
+
+.calendar .office-day.show-office-highlight::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--brand-color);
+}
+
+.calendar .past-day {
+  background-color: #f9f9f9;
+  color: #999;
+}
+
+.calendar .other-month {
+  background-color: #f5f5f5;
+  color: #aaa;
+}
+
+.calendar .bank-holiday {
+  background-color: #e8f4ff;
+  color: #0066cc;
+}
+
+.calendar .festive-break {
+  background-color: #ffeded;
+  color: #cc0000;
+}
+
+.office-indicator, .festive-indicator, .holiday-indicator {
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: var(--brand-color);
+}
+
+.holiday-indicator {
+  color: #0066cc;
+}
+
+.festive-indicator {
+  color: #cc0000;
+}
+
+.calendar-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  font-size: 0.9rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+  border: 1px solid #ddd;
+}
+
+.office-color {
+  background-color: var(--light-brand);
+  position: relative;
+}
+
+.office-color::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 4px;
+  background-color: var(--brand-color);
+}
+
+.bank-holiday-color {
+  background-color: #e8f4ff;
+}
+
+.festive-break-color {
+  background-color: #ffeded;
+}
+
+.toggle-group { 
+    display: flex;
+    align-items: center;
+    margin-left: auto; 
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+
+.toggle-label {
+  margin-right: 10px;
+  font-size: 0.9rem; 
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: var(--brand-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.settings-container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings-title {
+  color: var(--brand-color);
+  margin-bottom: 15px;
+}
+
+.settings-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.settings-option label {
+  margin-left: 10px;
+}
+
+/* Responsive layout adjustments */
+
+.next-week, .team-select {
+  flex: 1; 
+}
+
+
+/* --- Desktop Styles --- */
+@media (min-width: 769px) {
+  .flex-container {
+    flex-direction: row;
+  }
+
+  .next-week, .team-select {
+    flex: 1;
+  }
+
+ .heading-long {
+    display: block;
+  }
+
+  .heading-short {
+    display: none;
+  }
+
+  .next-week:not(.flex-container .next-week),
+  .team-select:not(.flex-container .team-select) {
+    margin-bottom: 15px;
+  }
+
+  .toggle-group {
+      flex-direction: row;
+      justify-content: flex-end; 
+      width: auto; 
+       margin-top: 0; 
+  }
+
+  .calendar-nav {
+    display: block; 
+    text-align: center; 
+  }
+
+  .calendar-month {
+    display: inline-block; 
+  }
+
+  .calendar-nav button {
+     position: absolute; 
+     top: 50%; 
+     transform: translateY(-50%); 
+  }
+
+  #prev-month {
+    left: 0; 
+  }
+
+  #next-month {
+    right: 0; 
+  }
+
+} /* End Desktop Media Query */
+
+
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+  .calendar td {
+    padding: 5px;
+    height: 50px;
+    text-align: center; 
+  }
+
+ .heading-long {
+    display: none;
+  }
+
+  .heading-short {
+    display: block;
+  }
+
+  .next-week-days {
+    font-size: 1rem; 
+  }
+
+  .team-select {
+    min-width: 120px; 
+    max-width: 35%; 
+  }
+
+  .next-week {
+    max-width: 65%; 
+  }
+
+  .calendar .date {
+    position: static;
+    display: inline-block; 
+    font-size: 0.8rem;
+    top: auto;
+    left: auto;
+  }
+
+  .office-indicator, .holiday-indicator, .festive-indicator {
+    display: none;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+    letter-spacing: 0.3px; 
+  }
+
+  h2 { 
+    font-size: 1.3rem;
+  }
+
+  .next-week h2 { 
+    font-size: 1.3rem; 
+    letter-spacing: 0.2px; 
+  }
+
+
+  .next-week-days {
+    font-size: 1.2rem;
+  }
+
+  .calendar-month {
+      font-size: 1.5rem; 
+      display: block; 
+  }
+
+
+ .calendar-nav button {
+    padding: 6px 12px; 
+    font-size: 0.9rem; 
+    position: static; 
+    transform: none; 
+  }
+
+  .calendar-nav {
+      display: flex; 
+      justify-content: space-between;
+      text-align: left; 
+  }
+
+  .calendar-options {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: wrap; 
+  }
+
+  .legend {
+    width: 100%; 
+    justify-content: flex-start;
+    margin-right: 0; 
+    margin-bottom: 10px; 
+  }
+
+  .toggle-group { 
+      display: flex;
+      flex-direction: row; 
+      justify-content: flex-end; 
+      width: 100%; 
+      margin-left: 0; 
+      margin-top: 0; 
+  }
+
+  .toggle-container {
+      margin-left: 15px; 
+  }
+
+  .toggle-container:first-child {
+      margin-left: 0; 
+  }
+
+  .calendar td {
+    position: relative;
+    min-height: 50px;
+    padding-bottom: 10px; 
+    text-align: center; 
+  }
+
+  .date { 
+    position: static; 
+    top: auto; 
+    left: auto; 
+    font-size: 0.9rem;
+    display: inline-block; 
+  }
+
+} /* End Mobile Media Query (max-width: 768px) */
+
+
+/* Very Small Screens */
+@media (max-width: 480px) {
+  .flex-container {
+    gap: 8px; 
+  }
+
+  .next-week, .team-select {
+    padding: 10px; 
+  }
+
+  .next-week-days {
+    font-size: 1rem; 
+  }
+
+  .team-select label {
+    margin-bottom: 5px; 
+    font-size: 0.9rem; 
+  }
+
+  .team-select select {
+    padding: 5px; 
+    font-size: 0.9rem; 
+  }
+
+  .calendar td {
+    padding: 3px;
+    height: 40px;
+    text-align: center; 
+    padding-bottom: 5px; 
+  }
+
+  .calendar th {
+    padding: 5px;
+    font-size: 0.8rem;
+  }
+
+  .calendar .date { 
+    position: static; 
+    top: auto; 
+    left: auto; 
+    font-size: 0.7rem;
+    display: inline-block; 
+  }
+
+  .office-indicator, .holiday-indicator, .festive-indicator {
+    display: none;
+  }
+
+  h1 {
+    font-size: 1.2rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    letter-spacing: 0.2px; 
+  }
+
+  .next-week h2 {
+      letter-spacing: 0.1px; 
+  }
+
+  .container {
+    padding: 10px;
+  }
+    .toggle-container {
+        margin-left: 10px;
+    }
+} /* End Very Small Screen Media Query (max-width: 480px) */
+
+
+/* --- Chrome Extension Section Styles (Updated) --- */
+.chrome-extension-section { 
+  background-color: #f0f0f0;
+  padding: 15px;
+  text-align: center;
+  margin-bottom: 15px; 
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chrome-extension-section .extension-title { 
+  font-size: 1.4rem;
+  color: #333;
+  margin-bottom: 0; 
+}
+
+.chrome-extension-section .download-link { 
+  position: relative; 
+  display: inline-block; 
+  text-decoration: none; 
+  color: var(--brand-color); /* Text color now uses site's brand color (pink) */
+  cursor: pointer;
+}
+
+.chrome-extension-section .download-link::after { 
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background-color: #3efdba; /* Underline color remains green */
+  transition: width 0.5s ease-out 0.5s; /* Underline animation duration and 0.5s delay */
+}
+
+/* Animation for the underline (triggered when .visible class is added to parent) */
+.chrome-extension-section.visible .download-link::after { 
+  width: 100%;
+}
+
+@keyframes vibrate {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-2px); }
+    40% { transform: translateX(2px); }
+    60% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+}
+
+/* Bounce animation definition */
+@keyframes bounceOnce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px); /* How far it bounces down */
+  }
+}
+
+.chrome-extension-section .download-link:hover {
+  animation-name: vibrate; /* Changed from bounceOnce to vibrate */
+  animation-duration: 0.3s; /* Adjusted to match common usage in your style.css */
+  animation-iteration-count: 1; /* You can keep this or adjust if needed */
+  animation-timing-function: ease-in-out; /* You can keep this or adjust if needed */
+}
+/* --- End Chrome Extension Section Styles --- */
