@@ -13,23 +13,6 @@
   font-family: "Outfit", sans-serif;
 }
 
-.note {
-  margin-top: 15px; /* Add some space above the note */
-  font-size: 0.75rem;
-  color: #555;
-  text-align: center; /* Center the note text */
-}
-
-/* First, ensure the flex container stays as row for all screen sizes */
-.flex-container {
-  display: flex;
-  flex-direction: row !important; /* Force row direction even on mobile */
-  justify-content: space-between; /* Space elements evenly */
-  gap: 15px;
-  margin-bottom: 15px; /* Space between this and the new extension section */
-  flex-wrap: nowrap; /* Prevent wrapping */
-}
-
 body {
   background-color: #f9f9f9;
   color: #333;
@@ -55,6 +38,16 @@ header {
 h1 {
   font-size: 1.8rem;
   letter-spacing: 0.5px; 
+}
+
+/* First, ensure the flex container stays as row for all screen sizes */
+.flex-container {
+  display: flex;
+  flex-direction: row !important; /* Force row direction even on mobile */
+  justify-content: space-between; /* Space elements evenly */
+  gap: 15px;
+  margin-bottom: 15px; /* Space between this and the new extension section */
+  flex-wrap: nowrap; /* Prevent wrapping */
 }
 
 .next-week {
@@ -373,6 +366,23 @@ input:checked + .slider:before {
 .settings-option label {
   margin-left: 10px;
 }
+
+/* Note and Copyright Styles */
+.note {
+  margin-top: 15px; 
+  font-size: 0.75rem;
+  color: #555;
+  text-align: center;
+}
+
+.copyright-notice {
+  margin-top: 20px; 
+  font-size: 0.7rem;
+  color: #666;
+  text-align: center;
+  padding-bottom: 20px; 
+}
+
 
 /* Responsive layout adjustments */
 
