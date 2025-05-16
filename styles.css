@@ -642,6 +642,12 @@ input:checked + .slider:before {
     }
 } /* End Very Small Screen Media Query (max-width: 480px) */
 
+/* Copyright notice styling for desktop */
+@media (min-width: 769px) {
+  .copyright-notice .copyright-em-statement {
+    display: block;
+  }
+}
 
 /* --- Chrome Extension Section Styles (Updated) --- */
 .chrome-extension-section { 
